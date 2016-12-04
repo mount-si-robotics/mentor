@@ -1,0 +1,2 @@
+// Include common definitions from above.
+apply from: '../build.common.gradle'
