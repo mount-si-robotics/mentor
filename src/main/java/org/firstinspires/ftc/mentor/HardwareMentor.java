@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.mentor;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -461,10 +461,10 @@ public class HardwareMentor
     // Drive routine that supports Mecanum wheels.  Will maintain a gyro heading.
     public void driveMecanumCartesian (double x, double y, double rotation, double gyroHeading, boolean inverted) {
         String functionName = "driveMecanumCartesian";
-        double LFPower = 0.0f;
-        double RFPower = 0.0f;
-        double LBPower = 0.0f;
-        double RBPower = 0.0f;
+        double LFPower;
+        double RFPower;
+        double LBPower;
+        double RBPower;
 
 //        // Make sure x and y are in range of -1.0 to 1.0
 //        clip(x, -1.0f, 1.0f);
@@ -782,7 +782,7 @@ public class HardwareMentor
         //
         if (allianceChannel != null) {
             allianceChannel.setMode(DigitalChannelController.Mode.INPUT);
-            if (allianceChannel.getState() == true) {
+            if (allianceChannel.getState()) {
                 alliance = Alliance.BLUE;
                 setCdimLEDs(true, false);
             } else {
@@ -799,7 +799,7 @@ public class HardwareMentor
         //
         if (startPositionChannel != null) {
             startPositionChannel.setMode(DigitalChannelController.Mode.INPUT);
-            if (startPositionChannel.getState() == true) {
+            if (startPositionChannel.getState()) {
                 startPosition = StartPosition.POSITION1;
             } else {
                 startPosition = StartPosition.POSITION2;
@@ -814,7 +814,7 @@ public class HardwareMentor
         //
         if (strategyChannel != null) {
             strategyChannel.setMode(DigitalChannelController.Mode.INPUT);
-            if (strategyChannel.getState() == true) {
+            if (strategyChannel.getState()) {
                 strategy = Strategy.STRATEGY1;
             } else {
                 strategy = Strategy.STRATEGY2;
