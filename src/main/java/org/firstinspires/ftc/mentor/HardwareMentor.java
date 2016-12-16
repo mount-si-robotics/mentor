@@ -15,11 +15,18 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.TempUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Temperature;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.abs;
 import static java.lang.Math.nextAfter;
 import static java.lang.Thread.sleep;
+import com.google.gson.Gson;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This is NOT an opmode.
@@ -39,27 +46,25 @@ import static java.lang.Thread.sleep;
  *
  * Servo channel:
  *
- * Sensor: I2C: Gyroscope:               "gyro"
- * Sensor: I2C: IMU:                     "imu"
- * Sensor: I2C: Modern Robotics Color:   "color"
- * Sensor: I2C: Adafruit Color:          "afcolor"
+ * Sensor: I2C: Gyroscope:            "gyro"
+ * Sensor: I2C: IMU:                  "imu"
+ * Sensor: I2C: Modern Robotics Color:"color"
+ * Sensor: I2C: Adafruit Color:       "afcolor"
  * Sensor: Analog 0: Modern Robotics Optical Distance Sensor: "ods"
  * Sensor: Digital channel 0:         "alliance"
  * Sensor: Digital channel 1:         "startposition"
  * Sensor: Digital channel 2:         "strategy"
- * Sensor: Digital channel 5:         Adafruit Color Sensor LED pin
+ * Sensor: Digital channel 5:         (Adafruit Color Sensor LED pin)
  *
  */
 
 /*
  * TODO List
- * 1. Verbose logging mode to record function name, parameters to a log file.
- * 2. Different controller scaling for forward versus back.
- * 3. Add a 1.7 scaling exponent
- * 4. Implement RobotConfigurationExceptions during init
- * 5. Implement a generic RobotException for other types of unexpected errors.
- * 6. Breakup init() function into individual component initializations
- * 7. Add support for a configuration file to allow dynamic changes to values instead of hardcoding
+ *  Add Verbose logging mode to record function name, parameters to a log file. Add logging method.
+ *  Different controller scaling for forward versus back.
+ *  Implement RobotConfigurationExceptions during init
+ *  Implement a generic RobotException for other types of unexpected errors.
+ *  Add support for a configuration file to allow dynamic changes to values instead of hardcoding
  *
  */
 
@@ -134,12 +139,28 @@ public class HardwareMentor
     private double potRawValue = 0.0;
 
     // Enums
-    public enum Alliance { RED, BLUE }
-    public enum Strategy { STRATEGY1, STRATEGY2 }
-    public enum StartPosition { POSITION1, POSITION2 }
+    public enum Alliance {
+        RED,
+        BLUE
+    }
+
+    public enum Strategy {
+        STRATEGY1,
+        STRATEGY2
+    }
+
+    public enum StartPosition {
+        POSITION1,
+        POSITION2
+    }
+
+    public enum LoggingMode {
+        VERBOSE,
+        NORMAL,
+        NONE
+    }
 
     // TODO: Implement generic drive routine that calls the appropriate drive function
-    // TODO: Implement function to set the drive train by the calling OpMode
     public enum DriveTrain {
         TWO_WHEEL_REAR,
         TWO_WHEEL_CENTER,
@@ -154,6 +175,7 @@ public class HardwareMentor
     enum ScaleMode {
         LINEAR,
         ONE_PT_FIVE,
+        ONE_PT_SEVEN,
         SQUARE,
         CUBE
     }
@@ -172,11 +194,15 @@ public class HardwareMentor
         OTHER
     }
 
-    // Sane default
-    // TODO: Throw exception somewhere if this DriveTrain.NONE is configured
-    public DriveTrain driveTrain = DriveTrain.NONE;
+    // Sane defaults
+    // TODO: Throw exception somewhere if DriveTrain.NONE is configured
+    public DriveTrain DRIVE_TRAIN = DriveTrain.NONE;
     public ScaleMode SCALE_MODE = ScaleMode.LINEAR;
     public ControllerMode CONTROLLER_MODE = ControllerMode.TANK;
+    private LoggingMode LOGGING_MODE = LoggingMode.NONE;
+
+    // TODO: better name for log file
+    private String LOGGING_FILE = "logfile";
 
     static final int    BLUE_LED    = 0;     // Blue LED channel on DIM
     static final int    RED_LED     = 1;     // Red LED Channel on DIM
@@ -189,8 +215,14 @@ public class HardwareMentor
 //    Orientation angles;
 
     /* local OpMode members. */
-    HardwareMap hwMap           =  null;
+    HardwareMap hwMap = null;
     public ElapsedTime runtime = new ElapsedTime();
+
+
+
+
+    public MentorHardwareRobotConfiguration robotConfigurationData = null;
+    public String robotConfigurationDataFile = null;
 
     // Class for Motors
     // TODO: Move this elsewhere and complete it
@@ -246,14 +278,53 @@ public class HardwareMentor
 
     /* Constructor */
     public HardwareMentor(){
+        String functionName = "HardwareMentor";
         // Empty constructor
         // Nothing to see here...
+    }
+
+    // Get the currently set LoggingMode
+    public LoggingMode getLoggingMode () {
+        String functionName = "getLoggingMode";
+
+        return LOGGING_MODE;
+    }
+
+    public void setLoggingMode (LoggingMode loggingMode) {
+        // TODO: NOT TESTED YET
+        String functionName = "setLoggingMode";
+
+        if (loggingMode != LOGGING_MODE) {
+            // TODO: Handle state change
+            if (loggingMode == LoggingMode.NONE) {
+                // TODO: stop logging
+            }
+            else {
+                // TODO: open log file and start logging
+            }
+
+            LOGGING_MODE = loggingMode;
+        }
+    }
+
+    public ControllerMode getControllerMode() {
+        String functionName = "getControllerMode";
+
+        return CONTROLLER_MODE;
     }
 
     public void setControllerMode(ControllerMode controllerMode) {
         String functionName = "setControllerMode";
 
         CONTROLLER_MODE = controllerMode;
+    }
+
+    // Get the global scale value
+    public ScaleMode getScaleMode() {
+        String functionName = "getScaleMode";
+
+        return SCALE_MODE;
+
     }
 
     // Set a global scaling mode
@@ -285,6 +356,9 @@ public class HardwareMentor
         else if (sm == ScaleMode.ONE_PT_FIVE) {
             exponent = 1.5;
         }
+        else if (sm == ScaleMode.ONE_PT_SEVEN) {
+            exponent = 1.7;
+        }
         else if (sm == ScaleMode.SQUARE) {
             exponent = 2.0;
         }
@@ -307,10 +381,18 @@ public class HardwareMentor
         return 0.0;
     }
 
+    // get the drive train
+    public DriveTrain getDriveTrain() {
+        String functionName = "getDriveTrain";
+
+        return DRIVE_TRAIN;
+    }
+
+    // Set the drive train
     public void setDriveTrain(DriveTrain dt) {
         String functionName = "setDriveTrain";
 
-        driveTrain = dt;
+        DRIVE_TRAIN = dt;
     }
 
     public double getConfigurationPotRawValue() {
@@ -342,19 +424,19 @@ public class HardwareMentor
 
         int currDiv = getConfigurationPotCurrentDivision();
         for (int i = 0; i < potBitValues.length; i++) {
-            if  ((currDiv & (1 << i)) == 0) {
-                potBitValues[i] = false;
-            }
-            else {
-                potBitValues[i] = true;
-            }
+            potBitValues[i] = (currDiv & (1 << i)) != 0;
         }
+    }
+
+    // get the global debug mode
+    public boolean getDebugMode() {
+        String functionName = "getDebugMode";
+
+        return DEBUG_MODE;
     }
 
     // Turn on debug mode for more verbose logging
     public void setDebugMode(boolean debugging) {
-        // TODO: NOT TESTED OR USED
-
         String functionName = "setDebugMode";
 
         DEBUG_MODE = debugging;
@@ -366,8 +448,8 @@ public class HardwareMentor
         // TODO: NOT TESTED
 
         String functionName = "colorMatchesAlliance";
-        int blueval = 0;
-        int redval = 0;
+        int blueval;
+        int redval;
 
         blueval = colorSensor.blue();
         redval = colorSensor.red();
@@ -402,8 +484,8 @@ public class HardwareMentor
         // TODO: NOT TESTED
 
         String functionName = "colorMatchesAlliance";
-        int blueval = 0;
-        int redval = 0;
+        int blueval;
+        int redval;
 
         blueval = color.blue();
         redval = color.red();
@@ -456,6 +538,17 @@ public class HardwareMentor
                 setCdimLEDs(false, true);
             }
         }
+    }
+
+    // Get the temperature reading from the IMU
+    public Temperature getTemperatureFromIMU() {
+        // TODO: NOT TESTED
+        String functionName = "getTemperatureFromIMU";
+
+        if (imu != null) {
+            return imu.getTemperature();
+        }
+        return new Temperature(TempUnit.FARENHEIT, 0, 0);
     }
 
     // Drive routine that supports Mecanum wheels.  Will maintain a gyro heading.
@@ -597,6 +690,7 @@ public class HardwareMentor
     // Use encoders to drive a specific distance
     public void driveDistanceInInches(double distance) {
         // TODO: NOT TESTED
+        String functionName = "driveDistanceInInches";
 
         // TODO: Implement this
     }
@@ -604,6 +698,7 @@ public class HardwareMentor
     // Follow a line using ODS until distance to an object is at or less than a value
     public void driveFollowLineUntilDistance(double distance) {
         // TODO: NOT TESTED
+        String functionName = "driveFollowLineUntilDistance";
 
         // TODO: Implement this
     }
@@ -612,9 +707,68 @@ public class HardwareMentor
     // Note: can be used in TeleOp to automate this
     public void pushBeaconUntilMatchesAlliance() {
         // TODO: NOT TESTED
+        String functionName = "pushBeaconUntilMatchesAlliance";
 
         // TODO: Implement this
 
+    }
+
+    // Turn the robot a specific number of degrees (positive or negative) using Gyro
+    // Note: Turns >= 360 degrees will be limited to < 360 degrees
+    // Turns will always honor the direction, even if the turn could be optimized by turning in the
+    // opposite direction.  E.g. a turn of -270 degrees will turn to the left instead of turning
+    // to the right 90 degrees.
+    public void turnByDegreesGyro(double degrees, double speed) {
+        // TODO: NOT TESTED
+        String functionName = "turnByDegreesGyro";
+        double turnDegrees = 0;
+
+        // TODO: Implement this
+
+        // Limit turnDegrees to 360 or less
+
+    }
+
+    // Turn the robot a specific number of degrees (positive or negative) using Adafruit IMU
+    // Note: Turns >= 360 degrees will be limited to < 360 degrees
+    // Turns will always honor the direction, even if the turn could be optimized by turning in the
+    // opposite direction.  E.g. a turn of -270 degrees will turn to the left instead of turning
+    // to the right 90 degrees.
+    public void turnByDegreesIMU(double degrees, double speed) {
+        // TODO: NOT TESTED
+        String functionName = "turnByDegreesIMU";
+        double turnDegrees = 0;
+
+        // TODO: Implement this
+
+        // Limit turnDegrees to 360 or less
+
+
+    }
+
+    // Turn the robot a specific number of degrees (positive or negative)
+    // Note: Turns >= 360 degrees will be limited to < 360 degrees
+    // Turns will always honor the direction, even if the turn could be optimized by turning in the
+    // opposite direction.  E.g. a turn of -270 degrees will turn to the left instead of turning
+    // to the right 90 degrees.
+    public void turnByDegrees(double degrees, double speed) throws RobotConfigurationException {
+        // TODO: NOT TESTED
+        String functionName = "turnByDegrees";
+
+        // If there is a Modern Robotics Gyro, use that first.
+        // If no MR Gyro, try to use an Adafruit IMU.
+        if (gyro != null) {
+            turnByDegreesGyro(degrees, speed);
+        }
+        else if (imu != null) {
+            turnByDegreesIMU(degrees, speed);
+        }
+        else {
+            // Can't turn without a gyro or IMU
+            throw new RobotConfigurationException("No gyro or IMU present!");
+        }
+
+        return;
     }
 
     // Fire and re-arm the choo choo launcher
@@ -636,6 +790,7 @@ public class HardwareMentor
     //
     public void fireAndArmChooChooLauncher() {
         // TODO: NOT TESTED
+        String functionName = "fireAndArmChooChooLauncher";
 
         // TODO: Implement this
 
@@ -647,14 +802,13 @@ public class HardwareMentor
     //
     ////////
 
-    // Initialize standard Hardware interfaces
-    public void init(HardwareMap ahwMap) {
-        // TODO: This function is too complex.
-        // TODO: Create smaller functions that initialize individual components.
+    // Initialize motors
+    private void initializeMotors() throws RobotConfigurationException {
+        String functionName = "initializeMotors";
 
-        String functionName = "init";
-        // Save reference to Hardware map
-        hwMap = ahwMap;
+        if (hwMap == null) {
+            throw new RobotConfigurationException(functionName + ": HardwareMap is null");
+        }
 
         // Define Motors
 //        LFMotor   = hwMap.dcMotor.get("LFMotor");
@@ -688,6 +842,26 @@ public class HardwareMentor
         RBMotor.setPower(0.0);
         ChooChooMotor.setPower(0.0);
         BeaterMotor.setPower(0.0);
+
+
+    }
+
+    // Initialize servos
+    private void initializeServos() throws RobotConfigurationException {
+        String functionName = "initializeServos";
+
+        if (hwMap == null) {
+            throw new RobotConfigurationException(functionName + ": HardwareMap is null");
+        }
+    }
+
+    // Initialize sensors
+    private void initializeSensors() throws RobotConfigurationException {
+        String functionName = "initializeSensors";
+
+        if (hwMap == null) {
+            throw new RobotConfigurationException(functionName + ": HardwareMap is null");
+        }
 
         // Get Sensors from Hardware Map
         cdim = hwMap.deviceInterfaceModule.get("cdim");
@@ -728,6 +902,7 @@ public class HardwareMentor
             parameters.loggingTag = "IMU";
             parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
             parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.temperatureUnit = BNO055IMU.TempUnit.FARENHEIT; // Set temperature unit.
 
             // Calibration data file is found in FIRST/settings/<data file>
             // Calibration data increases the accuracy of the IMU and reduces the time needed for initialization.
@@ -830,33 +1005,84 @@ public class HardwareMentor
         if (configurationPot != null) {
             // TODO: Add code to read potentiometer if used.
         }
+
     }
 
-    /***
-     *
-     * waitForTick implements a periodic delay. However, this acts like a metronome with a regular
-     * periodic tick.  This is used to compensate for varying processing times for each cycle.
-     * The function looks at the elapsed cycle time, and sleeps for the remaining time interval.
-     *
-     * @param periodMs  Length of wait cycle in mSec.
-     */
-    public void waitForTick(long periodMs) {
-
+    private void getRobotConfigurationDataFromFile() {
         // TODO: NOT TESTED
+        String functionName = "getRobotConfigurationDataFromFile";
 
-        long  remaining = periodMs - (long)runtime.milliseconds();
+        // TODO: Implement this
+        try {
+            //File file = hwMap.appContext // AppUtil.getInstance().getSettingsFile();
+            File file = null;
+            String serialized = ReadWriteFile.readFileOrThrow(file);
+            robotConfigurationData = MentorHardwareRobotConfiguration.deserialize(serialized);
+            //writeCalibrationData(data);
+        }
+        catch (IOException e)
+        {
+            // Ignore the absence of the indicated file, etc
+        }
+    }
 
-        // sleep for the remaining portion of the regular cycle period.
-        if (remaining > 0) {
-            try {
-                sleep(remaining);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+    // Initialize standard Hardware interfaces
+    public void init(HardwareMap ahwMap) {
+        String functionName = "init";
+
+        setLoggingMode(LoggingMode.NONE);
+
+        // Save reference to Hardware map
+        hwMap = ahwMap;
+
+        try {
+            initializeMotors();
+        }
+        catch (RobotConfigurationException rce) {
+            // TODO: Take action
         }
 
-        // Reset the cycle clock for the next pass.
-        runtime.reset();
+        try {
+            initializeServos();
+        }
+        catch (RobotConfigurationException rce) {
+            // TODO: Take action
+        }
+
+        try {
+            initializeSensors();
+        }
+        catch (RobotConfigurationException rce) {
+            // TODO: Take action
+        }
+
     }
+
+//    /***
+//     *
+//     * waitForTick implements a periodic delay. However, this acts like a metronome with a regular
+//     * periodic tick.  This is used to compensate for varying processing times for each cycle.
+//     * The function looks at the elapsed cycle time, and sleeps for the remaining time interval.
+//     *
+//     * @param periodMs  Length of wait cycle in mSec.
+//     */
+//    public void waitForTick(long periodMs) {
+//
+//        // TODO: NOT TESTED
+//
+//        long  remaining = periodMs - (long)runtime.milliseconds();
+//
+//        // sleep for the remaining portion of the regular cycle period.
+//        if (remaining > 0) {
+//            try {
+//                sleep(remaining);
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//            }
+//        }
+//
+//        // Reset the cycle clock for the next pass.
+//        runtime.reset();
+//    }
 }
 

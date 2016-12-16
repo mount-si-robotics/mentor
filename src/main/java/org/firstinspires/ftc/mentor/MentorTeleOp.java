@@ -62,7 +62,7 @@ public class MentorTeleOp extends LinearOpMode {
 
     /* Declare OpMode members. */
 
-    HardwareMentor robot = new HardwareMentor();   // Use a Pushbot's hardware
+    HardwareMentor robot = new HardwareMentor();   // Use mentor hardware definition
 
     @Override
     public void runOpMode() {
@@ -168,7 +168,6 @@ public class MentorTeleOp extends LinearOpMode {
 //            }
 //
             if (gamepad1.dpad_left) {
-                // TODO: DL
 
                 // Wait 2 seconds before allowing another controller switch
                 if ((robot.runtime.seconds() - lastControllerSwitch) > 2.0) {
