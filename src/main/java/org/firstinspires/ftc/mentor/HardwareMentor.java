@@ -456,22 +456,12 @@ public class HardwareMentor
 
         if ((blueval > 0) && (redval == 0)) {
             // is blue
-            if (alliance == Alliance.BLUE) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return alliance == Alliance.BLUE;
         }
         else {
             // is red
             if ((redval > 0) && (blueval == 0)) {
-                if (alliance == Alliance.RED) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return alliance == Alliance.RED;
             }
         }
         return true;
@@ -492,22 +482,12 @@ public class HardwareMentor
 
         if ((blueval > 0) && (redval == 0)) {
             // is blue
-            if (alliance == Alliance.BLUE) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return alliance == Alliance.BLUE;
         }
         else {
             // is red
             if ((redval > 0) && (blueval == 0)) {
-                if (alliance == Alliance.RED) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                return alliance == Alliance.RED;
             }
         }
         return true;
@@ -550,6 +530,23 @@ public class HardwareMentor
         }
         return new Temperature(TempUnit.FARENHEIT, 0, 0);
     }
+
+    // Zero out the Gyro heading
+    public void zeroGyro() {
+        // TODO: NOT TESTED
+        String functionName = "zeroGyro";
+
+        if (gyro != null) {
+            gyro.resetZAxisIntegrator();
+        }
+    }
+
+
+    ////////
+    //
+    // Drive methods
+    //
+    ////////
 
     // Drive routine that supports Mecanum wheels.  Will maintain a gyro heading.
     public void driveMecanumCartesian (double x, double y, double rotation, double gyroHeading, boolean inverted) {
@@ -768,7 +765,6 @@ public class HardwareMentor
             throw new RobotConfigurationException("No gyro or IMU present!");
         }
 
-        return;
     }
 
     // Fire and re-arm the choo choo launcher

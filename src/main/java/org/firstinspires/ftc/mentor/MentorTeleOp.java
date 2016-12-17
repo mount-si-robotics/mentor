@@ -62,7 +62,7 @@ public class MentorTeleOp extends LinearOpMode {
 
     /* Declare OpMode members. */
 
-    HardwareMentor robot = new HardwareMentor();   // Use mentor hardware definition
+    private HardwareMentor robot = new HardwareMentor();   // Use mentor hardware definition
 
     @Override
     public void runOpMode() {
@@ -85,6 +85,12 @@ public class MentorTeleOp extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         robot.runtime.reset();
+
+        // Zero out the gyro after starting the robot.
+        // This corrects any gyro drift that may occur if the robot is idle for a long period of
+        // time after you have pressed the Init button.  E.g. Announcer talks a long time,
+        // FTA fixing a robot, Field maintenance, etc.
+        robot.zeroGyro();
 
         /////
         //
@@ -196,9 +202,9 @@ public class MentorTeleOp extends LinearOpMode {
 //                // TODO: back
 //            }
 //
-            if (gamepad1.back) {
-                // TODO: back
-            }
+//            if (gamepad1.back) {
+//                // TODO: back
+//            }
 //
 //            if (gamepad1.start) {
 //                // TODO: start

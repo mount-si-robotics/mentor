@@ -186,6 +186,12 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        // Zero out the gyro after starting the robot.
+        // This corrects any gyro drift that may occur if the robot is idle for a long period of
+        // time after you have pressed the Init button.  E.g. Announcer talks a long time,
+        // FTA fixing a robot, Field maintenance, etc.
+        robot.zeroGyro();
+
         ////////
         //
         // Function Tests

@@ -84,6 +84,12 @@ public class MentorAutonomous extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        // Zero out the gyro after starting the robot.
+        // This corrects any gyro drift that may occur if the robot is idle for a long period of
+        // time after you have pressed the Init button.  E.g. Announcer talks a long time,
+        // FTA fixing a robot, Field maintenance, etc.
+        robot.zeroGyro();
+
 //        //Drive forward until robot reaches a white line
 //        // Start the robot moving forward, and then begin looking for a white line.
 //        robot.LBMotor.setPower(robot.APPROACH_SPEED);
