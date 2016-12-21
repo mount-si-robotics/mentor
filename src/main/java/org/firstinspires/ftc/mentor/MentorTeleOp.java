@@ -76,6 +76,9 @@ public class MentorTeleOp extends LinearOpMode {
          * step (using the FTC Robot Controller app on the phone).
          */
         robot.init(hardwareMap);
+
+        robot.setOpMode(this);
+
         gamepad1.setJoystickDeadzone(robot.DEADZONE);
         gamepad2.setJoystickDeadzone(robot.DEADZONE);
 

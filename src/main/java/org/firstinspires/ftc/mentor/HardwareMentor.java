@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.mentor;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,6 +28,8 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is NOT an opmode.
@@ -54,6 +57,7 @@ import java.io.IOException;
  * Sensor: Digital channel 0:         "alliance"
  * Sensor: Digital channel 1:         "startposition"
  * Sensor: Digital channel 2:         "strategy"
+ * Sensor: Digital channel 3:         "irBeamBreak"
  * Sensor: Digital channel 5:         (Adafruit Color Sensor LED pin)
  *
  */
@@ -73,6 +77,8 @@ public class HardwareMentor
     // Class name for logging purposes
     private String className = "HardwareMentor";
 
+    private OpMode OPMODE = null;
+
     /* Public OpMode members. */
     public boolean DEBUG_MODE = false;  // Debugging is off by default
 
@@ -82,6 +88,11 @@ public class HardwareMentor
     public DcMotor  RBMotor  = null;
     public DcMotor  ChooChooMotor = null;
     public DcMotor  BeaterMotor = null;
+
+    MotorMetadataMap motorMetadataMap = new MotorMetadataMap();
+
+    // Mapping occurs in initializeMotors()
+    Map<DcMotor, MotorMetadata> motorData = new HashMap<>();
 
     public float DEADZONE = 0.05f;
     static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
@@ -109,10 +120,11 @@ public class HardwareMentor
     public GyroSensor gyro = null;  // Modern Robotics Gyroscope
     public ColorSensor color = null; // Modern Robotics Color
     public ColorSensor afcolor = null; // Adafruit Color Sensor
+
     // we assume that the LED pin of the RGB sensor is connected to
     // digital port 5 (zero indexed).
-
     static final int ADAFRUIT_COLOR_LED_CHANNEL = 5;
+
     public OpticalDistanceSensor ods = null;  // Modern Robotics ODS
     public BNO055IMU imu;  // Adafruit IMU
 
@@ -120,6 +132,9 @@ public class HardwareMentor
     public DigitalChannel allianceChannel = null;
     public DigitalChannel startPositionChannel = null;
     public DigitalChannel strategyChannel = null;
+
+    // IR Beam Break Digital Sensor
+    public DigitalChannel irBeamBreak = null;
 
     // Potentiometer for providing analog input
     public AnalogInput configurationPot = null;
@@ -185,14 +200,7 @@ public class HardwareMentor
         ARCADE
     }
 
-    // List of FTC Legal Motor Types
-    enum MotorType {
-        ANDYMARK_NEVEREST_20,
-        ANDYMARK_NEVEREST_40,
-        ANDYMARK_NEVEREST_60,
-        TETRIX,
-        OTHER
-    }
+
 
     // Sane defaults
     // TODO: Throw exception somewhere if DriveTrain.NONE is configured
@@ -218,60 +226,11 @@ public class HardwareMentor
     HardwareMap hwMap = null;
     public ElapsedTime runtime = new ElapsedTime();
 
-
-
-
+    // Configuration file for overriding default settings
     public MentorHardwareRobotConfiguration robotConfigurationData = null;
     public String robotConfigurationDataFile = null;
 
-    // Class for Motors
-    // TODO: Move this elsewhere and complete it
-//    class MotorMetadata {
-//        MotorType motorType = null;
-//        double ticksPerRotation = 0.0;
-//    }
 
-    // Generic exception for robot configuration errors
-    public class RobotConfigurationException extends Exception {
-
-        /**
-         * Constructs a new {@code Exception} that includes the current stack trace.
-         */
-        public RobotConfigurationException() {
-            super();
-        }
-
-        /**
-         * Constructs a new {@code Exception} with the current stack trace and the
-         * specified detail message.
-         *
-         * @param detailMessage the detail message for this exception.
-         */
-        public RobotConfigurationException(String detailMessage) {
-            super(detailMessage);
-        }
-
-        /**
-         * Constructs a new {@code Exception} with the current stack trace, the
-         * specified detail message and the specified cause.
-         *
-         * @param detailMessage the detail message for this exception.
-         * @param throwable
-         */
-        public RobotConfigurationException(String detailMessage, Throwable throwable) {
-            super(detailMessage, throwable);
-        }
-
-        /**
-         * Constructs a new {@code Exception} with the current stack trace and the
-         * specified cause.
-         *
-         * @param throwable the cause of this exception.
-         */
-        public RobotConfigurationException(Throwable throwable) {
-            super(throwable);
-        }
-    }
 
     ///////////////////////////////////////////////////
     ///////////////////////////////////////////////////
@@ -281,6 +240,11 @@ public class HardwareMentor
         String functionName = "HardwareMentor";
         // Empty constructor
         // Nothing to see here...
+    }
+
+    // Get a handle to the OpMode that is using this class
+    public void setOpMode(OpMode opMode) {
+        OPMODE = opMode;
     }
 
     // Get the currently set LoggingMode
@@ -539,6 +503,20 @@ public class HardwareMentor
         if (gyro != null) {
             gyro.resetZAxisIntegrator();
         }
+    }
+
+    // Test to see if an IR Beam Break sensor is broken (value low)
+    public boolean isIRBeamBroken() {
+        // TODO: NOT TESTED
+        String functionName = "isIRBeamBroken";
+
+        if (irBeamBreak != null) {
+            return irBeamBreak.getState();
+        }
+
+        // TODO: Should throw an exception if try to use without a sensor available
+
+        return false;
     }
 
 
@@ -802,6 +780,10 @@ public class HardwareMentor
     private void initializeMotors() throws RobotConfigurationException {
         String functionName = "initializeMotors";
 
+        // Initialize the motor metadata map
+        // TODO: is there a better place to put this initialization?
+        motorMetadataMap.initialize();
+
         if (hwMap == null) {
             throw new RobotConfigurationException(functionName + ": HardwareMap is null");
         }
@@ -813,6 +795,15 @@ public class HardwareMentor
         RBMotor  = hwMap.dcMotor.get("RBMotor");
         ChooChooMotor = hwMap.dcMotor.get("ChooChooMotor");
         BeaterMotor = hwMap.dcMotor.get("BeaterMotor");
+
+        // Map the motors to their metadata, which includes encoder counts, etc.
+//        motorData.put(LFMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
+//        motorData.put(RFMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
+        motorData.put(LBMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
+        motorData.put(RBMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
+        motorData.put(ChooChooMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.TETRIX));
+        motorData.put(BeaterMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.TETRIX));
+
 
         // Set starting motor directions
 //        LFMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
@@ -831,6 +822,15 @@ public class HardwareMentor
         ChooChooMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BeaterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        // Set braking mode for each motor
+        // SDK default for year 2 is to put the motor in BRAKE mode.  Year 1 was FLOAT.
+//        LFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        RFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        ChooChooMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BeaterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         // Set all motors to zero power
 //        LFMotor.setPower(0.0);
 //        RFMotor.setPower(0.0);
@@ -839,7 +839,15 @@ public class HardwareMentor
         ChooChooMotor.setPower(0.0);
         BeaterMotor.setPower(0.0);
 
-
+        // Set motor max speed based on encoder counts from motor metadata
+        // Count per revolution is dependent on the motor type
+        // If not set, defaults to Tetrix  (1440) which impacts performance of AndyMark motors...
+//        LFMotor.setMaxSpeed((int)motorData.get(LFMotor).encoderCountPerRevolution);
+//        RFMotor.setMaxSpeed((int)motorData.get(RFMotor).encoderCountPerRevolution);
+        LBMotor.setMaxSpeed((int)motorData.get(LBMotor).encoderCountPerRevolution);
+        RBMotor.setMaxSpeed((int)motorData.get(RBMotor).encoderCountPerRevolution);
+        ChooChooMotor.setMaxSpeed((int)motorData.get(ChooChooMotor).encoderCountPerRevolution);
+        BeaterMotor.setMaxSpeed((int)motorData.get(BeaterMotor).encoderCountPerRevolution);
     }
 
     // Initialize servos
@@ -869,6 +877,7 @@ public class HardwareMentor
         allianceChannel = hwMap.digitalChannel.get("alliance");
         startPositionChannel = hwMap.digitalChannel.get("startposition");
         strategyChannel = hwMap.digitalChannel.get("strategy");
+        irBeamBreak = hwMap.digitalChannel.get("irBeamBreak");
 
 
         ////////

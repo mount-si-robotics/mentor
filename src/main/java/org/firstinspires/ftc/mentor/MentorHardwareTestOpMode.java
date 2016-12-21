@@ -167,7 +167,9 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
     public void runOpMode() {
 
         // Initialize robot hardware
-        //robot.init(hardwareMap);
+//        robot.init(hardwareMap);
+
+//        robot.setOpMode(this);
 
         // Set the default gamepad deadzone
         gamepad1.setJoystickDeadzone(robot.DEADZONE);

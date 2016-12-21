@@ -77,6 +77,8 @@ public class MentorAutonomous extends LinearOpMode {
         robot.init(hardwareMap);
 //        robot.setDriveTrain(HardwareMentor.DriveTrain.TWO_WHEEL_REAR);
 
+        robot.setOpMode(this);
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
