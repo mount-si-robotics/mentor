@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <MotorController name="MtrCtrl1" serialNumber="AL00VG6R">
+        <Motor name="LBMotor" port="1" />
+        <Motor name="RBMotor" port="2" />
+    </MotorController>
+    <DeviceInterfaceModule name="cdim" serialNumber="AL00XKWL">
+        <ColorSensor name="color" port="0" />
+        <AdafruitBNO055IMU name="imu" port="1" />
+        <OpticalDistanceSensor name="ods" port="0" />
+        <DigitalDevice name="alliance" port="0" />
+        <DigitalDevice name="startposition" port="1" />
+        <DigitalDevice name="strategy" port="2" />
+    </DeviceInterfaceModule>
+    <MotorController name="MtrCtrl2" serialNumber="AL00VI3T">
+        <Motor name="ChooChooMotor" port="1" />
+        <Motor name="BeaterMotor" port="2" />
+    </MotorController>
+</Robot>
