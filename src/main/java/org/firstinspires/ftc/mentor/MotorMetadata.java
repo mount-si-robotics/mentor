@@ -4,16 +4,7 @@ package org.firstinspires.ftc.mentor;
  * Created by markdolecki on 12/19/16.
  */
 
-// List of FTC Legal Motor Types
-enum MotorType {
-    ANDYMARK_NEVEREST_20,
-    ANDYMARK_NEVEREST_40,
-    ANDYMARK_NEVEREST_60,
-    ANDYMARK_NEVEREST_3PT7,
-    TETRIX,
-    OTHER,
-    NONE
-}
+
 
 public class MotorMetadata {
     String name = null;
@@ -27,6 +18,17 @@ public class MotorMetadata {
     String stallCurrent = null;
     String gearboxBreakForce = null;
     String minBackdriveTorque = null;
+
+    // List of FTC Legal Motor Types
+    enum MotorType {
+        ANDYMARK_NEVEREST_20,
+        ANDYMARK_NEVEREST_40,
+        ANDYMARK_NEVEREST_60,
+        ANDYMARK_NEVEREST_3PT7,
+        TETRIX,
+        OTHER,
+        NONE
+    }
 
     public MotorMetadata() {
         // Default constructor

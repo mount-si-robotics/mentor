@@ -75,9 +75,7 @@ public class MentorTeleOp extends LinearOpMode {
          * to 'get' must correspond to the names assigned during the robot configuration
          * step (using the FTC Robot Controller app on the phone).
          */
-        robot.init(hardwareMap);
-
-        robot.setOpMode(this);
+        robot.init(hardwareMap, this);
 
         gamepad1.setJoystickDeadzone(robot.DEADZONE);
         gamepad2.setJoystickDeadzone(robot.DEADZONE);

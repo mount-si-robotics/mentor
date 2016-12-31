@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.mentor;
 
+import android.media.MediaPlayer;
+import android.support.annotation.RawRes;
+
+import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -15,20 +20,27 @@ import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.ftccommon.external.SoundPlayingRobotMonitor;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.TempUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Temperature;
+import org.firstinspires.ftc.teamcode.mentor.R;
 
 import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.abs;
 import static java.lang.Math.nextAfter;
 import static java.lang.Thread.sleep;
 import com.google.gson.Gson;
+import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -41,6 +53,8 @@ import java.util.Map;
  *
  * Motor channel:  Left  front drive motor:     "LFMotor"
  * Motor channel:  Right front drive motor:     "RFMotor"
+ * Motor channel:  Left middle drive motor:
+ * Motor channel:  Right middle drive motor:
  * Motor channel:  Left back drive motor:       "LBMotor"
  * Motor channel:  Right back drive motor:      "RBMotor"
  *
@@ -77,17 +91,24 @@ public class HardwareMentor
     // Class name for logging purposes
     private String className = "HardwareMentor";
 
-    private OpMode OPMODE = null;
+    private LinearOpMode LINEAR_OPMODE = null;
 
     /* Public OpMode members. */
     public boolean DEBUG_MODE = false;  // Debugging is off by default
 
-    public DcMotor  LFMotor   = null;
-    public DcMotor  RFMotor  = null;
-    public DcMotor  LBMotor   = null;
-    public DcMotor  RBMotor  = null;
-    public DcMotor  ChooChooMotor = null;
-    public DcMotor  BeaterMotor = null;
+    public DcMotor  LFMotor   = null; // Left Front drive
+    public DcMotor  RFMotor  = null;  // Right Front drive
+    public DcMotor  LMMotor = null; // Left Middle drive
+    public DcMotor  RMMotor = null; // Right Middle drive
+    public DcMotor  LBMotor   = null; // Left Back drive
+    public DcMotor  RBMotor  = null;  // Right Back drive
+    public DcMotor  ChooChooMotor = null;  // Launcher motor
+    public DcMotor  BeaterMotor = null;    // Ball gather motor
+
+    // Maps to contain the motors allocated on this robot.
+    // Add motors to the map(s) during init
+    Map<DcMotor, String> allMotorMap = new HashMap<>();
+    Map<DcMotor, String> driveMotorMap = new HashMap<>();
 
     MotorMetadataMap motorMetadataMap = new MotorMetadataMap();
 
@@ -96,25 +117,27 @@ public class HardwareMentor
 
     public float DEADZONE = 0.05f;
     static final double     WHITE_THRESHOLD = 0.2;  // spans between 0.1 - 0.5 from dark to light
-    double APPROACH_SPEED = 0.5; // drive speed
+    //double APPROACH_SPEED = 0.5; // drive speed
+    double DEFAULT_DRIVE_SPEED = 0.5; // drive speed to use when not specified
+    double DEFAULT_TURN_SPEED = 0.4;  // turn speed to use when not specified
 
     // Motor Constants
     static final double MIN_MOTOR_SPEED = -1.0;
     static final double MAX_MOTOR_SPEED = 1.0;
 
-    // Rotation speed and direction for the choo choo launcher motor
+    // Default rotation speed and direction for the choo choo launcher motor
     double CHOO_CHOO_MOTOR_SPEED = 0.5;
 
-    // Rotation speed and direction for the beater (ball collector) motor
+    // Default rotation speed and direction for the beater (ball collector) motor
     double BEATER_MOTOR_SPEED = 0.5;
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 3.0 ;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    double ENCODER_DEGREE_PER_COUNT = 360.0 / COUNTS_PER_MOTOR_REV;
-    static final double     DRIVE_SPEED             = 0.6;
-    static final double     TURN_SPEED              = 0.5;
+//    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
+//    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
+//    static final double     WHEEL_DIAMETER_INCHES   = 3.0 ;     // For figuring circumference
+//    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+//    double ENCODER_DEGREE_PER_COUNT = 360.0 / COUNTS_PER_MOTOR_REV;
+//    static final double     DRIVE_SPEED             = 0.6;
+//    static final double     TURN_SPEED              = 0.5;
 
     public DeviceInterfaceModule cdim = null;
     public GyroSensor gyro = null;  // Modern Robotics Gyroscope
@@ -123,7 +146,7 @@ public class HardwareMentor
 
     // we assume that the LED pin of the RGB sensor is connected to
     // digital port 5 (zero indexed).
-    static final int ADAFRUIT_COLOR_LED_CHANNEL = 5;
+    private static final int ADAFRUIT_COLOR_LED_CHANNEL = 5;
 
     public OpticalDistanceSensor ods = null;  // Modern Robotics ODS
     public BNO055IMU imu;  // Adafruit IMU
@@ -200,8 +223,6 @@ public class HardwareMentor
         ARCADE
     }
 
-
-
     // Sane defaults
     // TODO: Throw exception somewhere if DriveTrain.NONE is configured
     public DriveTrain DRIVE_TRAIN = DriveTrain.NONE;
@@ -230,6 +251,10 @@ public class HardwareMentor
     public MentorHardwareRobotConfiguration robotConfigurationData = null;
     public String robotConfigurationDataFile = null;
 
+    // Identity of the sounds played by this monitor. Users can change these
+    // instance variables in order to cause different sounds to be played.
+    public @RawRes int soundTest    = R.raw.lg;
+
 
 
     ///////////////////////////////////////////////////
@@ -243,8 +268,9 @@ public class HardwareMentor
     }
 
     // Get a handle to the OpMode that is using this class
-    public void setOpMode(OpMode opMode) {
-        OPMODE = opMode;
+    public void setLinearOpMode(LinearOpMode opMode) {
+        String functionName = "setLinearOpMode";
+        LINEAR_OPMODE = opMode;
     }
 
     // Get the currently set LoggingMode
@@ -339,7 +365,8 @@ public class HardwareMentor
         String functionName = "getMotorPositionInDegrees";
 
         if (motor != null) {
-            return (motor.getCurrentPosition() * COUNTS_PER_MOTOR_REV) % 360.0;
+            // TODO: Account for gearing!
+            return (motor.getCurrentPosition() * motorData.get(motor).encoderCountPerRevolution) % 360.0;
         }
 
         return 0.0;
@@ -514,9 +541,23 @@ public class HardwareMentor
             return irBeamBreak.getState();
         }
 
-        // TODO: Should throw an exception if try to use without a sensor available
+        // Throw an exception if try to use without a sensor available
+        try {
+            throw(new RobotConfigurationException(functionName + ": No beam break sensor configured!"));
+        } catch (RobotConfigurationException e) {
+            e.printStackTrace();
+        }
 
         return false;
+    }
+
+    // Play a sound stored in a resource file
+    public void playSound(int sound) {
+        // TODO: NOT TESTED
+        String functionName = "playSound";
+
+        MediaPlayer mediaPlayer = MediaPlayer.create(hwMap.appContext, sound);
+        mediaPlayer.start();
     }
 
 
@@ -605,7 +646,7 @@ public class HardwareMentor
 
         String functionName = "driveRearTwoWheel";
 
-        drive(0.0, 0.0, LBPower, RBPower);
+        drive(0.0, 0.0, 0.0, 0.0, LBPower, RBPower);
     }
 
     // Two wheel drive using front wheels only
@@ -614,7 +655,7 @@ public class HardwareMentor
 
         String functionName = "driveFrontTwoWheel";
 
-        drive(LFPower, RFPower, 0.0, 0.0);
+        drive(LFPower, RFPower, 0.0, 0.0, 0.0, 0.0);
     }
 
     // TODO: Make this into a generic drive routine to support all different drive trains
@@ -626,16 +667,18 @@ public class HardwareMentor
     //   Mecanum drive
     //   Omniwheel drive
     //   45 Degree Four wheel Omniwheel drive
-    public void drive(double LFPower, double RFPower, double LBPower, double RBPower) {
+    public void drive(double LFPower, double RFPower, double LMPower, double RMPower, double LBPower, double RBPower) {
         // TODO: NOT TESTED
 
         String functionName = "drive";
 
         // Normalize the power of each motor so that the maximum motor power is MAX_MOTOR_SPEED
-        double maxPower = Math.max(LFPower, Math.max(RFPower, Math.max(LBPower, RBPower)));
+        double maxPower = Math.max(LFPower, Math.max(RFPower, Math.max(LMPower, Math.max(RMPower, Math.max(LBPower, RBPower)))));
         if (maxPower > MAX_MOTOR_SPEED) {
             LFPower /= maxPower;
             RFPower /= maxPower;
+            LMPower /= maxPower;
+            RMPower /= maxPower;
             LBPower /= maxPower;
             RBPower /= maxPower;
         }
@@ -648,11 +691,50 @@ public class HardwareMentor
         if (RFMotor != null) {
             RFMotor.setPower(RFPower);
         }
+        if (LMMotor != null) {
+            LMMotor.setPower(LMPower);
+        }
+        if (RMMotor != null) {
+            RMMotor.setPower(RMPower);
+        }
         if (LBMotor != null) {
             LBMotor.setPower(LBPower);
         }
         if (RBMotor != null) {
             RBMotor.setPower(RBPower);
+        }
+    }
+
+    // drive method specifying only left/right values
+    public void drive (double leftPower, double rightPower) {
+        // TODO: NOT TESTED
+        String functionName = "drive";
+
+        // Use same speed for all potential left/right motors
+        drive(leftPower, rightPower, leftPower, rightPower, leftPower, rightPower);
+    }
+
+    // Stop drive motors
+    public void stopDriveMotors() {
+        // TODO: NOT TESTED
+        String functionName = "stopDriveMotors";
+
+        for (DcMotor motor : driveMotorMap.keySet()) {
+            motor.setPower(0.0);
+        }
+    }
+
+    // Stop drive motors and wait
+    public void stopDriveMotors(long delayMillis) {
+        // TODO: NOT TESTED
+        String functionName = "stopDriveMotors";
+
+        stopDriveMotors();
+
+        try {
+            LINEAR_OPMODE.wait(delayMillis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -662,18 +744,144 @@ public class HardwareMentor
     //
     ////////
 
+
+    // Set the mode for the drive motors
+    public void setDriveMotorMode(DcMotor.RunMode runMode) {
+        // TODO: NOT TESTED
+        String functionName = "setDriveMotorMode";
+
+        for (DcMotor motor : driveMotorMap.keySet()) {
+            motor.setMode(runMode);
+        }
+    }
+
+    // Get the drive motor run mode
+    public DcMotor.RunMode getDriveMotorMode() {
+        // TODO: NOT TESTED
+        String functionName = "getDriveMotorMode";
+
+        for (DcMotor motor : driveMotorMap.keySet()) {
+            return motor.getMode();
+        }
+
+        // Should never reach this point unless no drive motors are configured.
+        try {
+            throw(new RobotConfigurationException(functionName + ": No drive motors configured."));
+        } catch (RobotConfigurationException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    // Set the zero power behavior for drive motors
+    public void setDriveMotorZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
+        // TODO: NOT TESTED
+        String functionName = "setDriveMotorZeroPowerBehavior";
+
+        for (DcMotor motor : driveMotorMap.keySet()) {
+            motor.setZeroPowerBehavior(zeroPowerBehavior);
+        }
+    }
+
+    // Check to see if drive motors are busy
+    public boolean driveMotorsBusy() {
+        // TODO: NOT TESTED
+        String functionName = "driveMotorsBusy";
+        boolean returnVal = false;
+
+        for (DcMotor motor : driveMotorMap.keySet()) {
+            if (motor.isBusy()) {
+                returnVal |= true;
+            }
+        }
+
+        return returnVal;
+    }
+
     // Use encoders to drive a specific distance
-    public void driveDistanceInInches(double distance) {
+    public void driveDistanceInInches(double left_distance, double right_distance, double speed) {
+        // TODO: NOT TESTED
+        String functionName = "driveDistanceInInches";
+        int newLeftTarget;
+        int newRightTarget;
+
+        // TODO: Implement this
+
+        // If this is not a LinearOpMode we can't proceed
+        if (LINEAR_OPMODE == null) {
+            try {
+                throw(new RobotConfigurationException(functionName + ": LINEAR_OPMODE is null"));
+            } catch (RobotConfigurationException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        // Get the current run mode and save it for restoring it later
+        DcMotor.RunMode runMode = getDriveMotorMode();
+
+        // Set to RUN_USING_ENCODER
+        setDriveMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // TODO: Implement this
+        // Determine new target position, and pass to motor controller
+        if (LFMotor != null) {
+            newLeftTarget = LFMotor.getCurrentPosition() + (int) (left_distance * (int)motorData.get(LFMotor).encoderCountPerRevolution);
+            LFMotor.setTargetPosition(newLeftTarget);
+        }
+        if (LMMotor != null) {
+            newLeftTarget = LMMotor.getCurrentPosition() + (int) (left_distance * (int)motorData.get(LMMotor).encoderCountPerRevolution);
+            LMMotor.setTargetPosition(newLeftTarget);
+        }
+        if (LBMotor != null) {
+            newLeftTarget = LBMotor.getCurrentPosition() + (int) (left_distance * (int)motorData.get(LBMotor).encoderCountPerRevolution);
+            LBMotor.setTargetPosition(newLeftTarget);
+        }
+        if (RFMotor != null) {
+            newRightTarget = RFMotor.getCurrentPosition() + (int) (right_distance * (int)motorData.get(RFMotor).encoderCountPerRevolution);
+            RFMotor.setTargetPosition(newRightTarget);
+        }
+        if (RMMotor != null) {
+            newRightTarget = RMMotor.getCurrentPosition() + (int) (right_distance * (int)motorData.get(RMMotor).encoderCountPerRevolution);
+            RMMotor.setTargetPosition(newRightTarget);
+        }
+        if (RBMotor != null) {
+            newRightTarget = RBMotor.getCurrentPosition() + (int) (right_distance * (int)motorData.get(RBMotor).encoderCountPerRevolution);
+            RBMotor.setTargetPosition(newRightTarget);
+        }
+
+        drive(speed, speed, speed, speed, speed, speed);
+
+        while (driveMotorsBusy() && LINEAR_OPMODE.opModeIsActive()) {
+            LINEAR_OPMODE.telemetry.addData(functionName, ": driving...");
+            LINEAR_OPMODE.telemetry.update();
+        }
+
+        stopDriveMotors();
+        // TODO: Should we wait here for the motors to stop?
+//        stopDriveMotors(250); // Stop motors and delay 250 milliseconds
+
+        // Restore the original run mode
+        setDriveMotorMode(runMode);
+
+    }
+
+    // Use encoders to drive a specific distance using default speed
+    public void driveDistanceInInches(double left_distance, double right_distance) {
         // TODO: NOT TESTED
         String functionName = "driveDistanceInInches";
 
-        // TODO: Implement this
+        driveDistanceInInches(left_distance, right_distance, DEFAULT_DRIVE_SPEED);
+
     }
 
     // Follow a line using ODS until distance to an object is at or less than a value
     public void driveFollowLineUntilDistance(double distance) {
         // TODO: NOT TESTED
         String functionName = "driveFollowLineUntilDistance";
+
+//        ods.getRawLightDetected();
 
         // TODO: Implement this
     }
@@ -686,38 +894,105 @@ public class HardwareMentor
 
         // TODO: Implement this
 
+        // Drive forward and push beacon
+        // Wait 2 seconds for beacon to change
+        // Check beacon color
+        // If not alliance color, backup and wait 3 more seconds
+        // Repeat until alliance color match
+
+
     }
 
     // Turn the robot a specific number of degrees (positive or negative) using Gyro
     // Note: Turns >= 360 degrees will be limited to < 360 degrees
-    // Turns will always honor the direction, even if the turn could be optimized by turning in the
-    // opposite direction.  E.g. a turn of -270 degrees will turn to the left instead of turning
-    // to the right 90 degrees.
     public void turnByDegreesGyro(double degrees, double speed) {
         // TODO: NOT TESTED
         String functionName = "turnByDegreesGyro";
-        double turnDegrees = 0;
-
-        // TODO: Implement this
+        double gain = 0.7; // Tune this value as needed +/- for accurate turns
+        double currentHeading;
+        double timeout = 10.0;  // TODO: what is appropriate timeout value for a turn?
+        double headingError;
+        double driveSteering;
+        double leftPower;
+        double rightPower;
 
         // Limit turnDegrees to 360 or less
 
+        runtime.reset();
+        do {
+            currentHeading = gyro.getHeading();
+
+            // Optimize turn direction
+            if (currentHeading > 180.0) {
+                currentHeading -= 360.0;
+            }
+
+            headingError = currentHeading - degrees;
+            driveSteering = headingError * gain;
+
+            leftPower = DEFAULT_TURN_SPEED + driveSteering;
+            rightPower = DEFAULT_TURN_SPEED - driveSteering;
+
+            leftPower = Range.clip(leftPower, 0.0, 1.0);
+            rightPower = Range.clip(rightPower, 0.0, 1.0);
+
+            drive(leftPower,rightPower);
+
+        } while (currentHeading < degrees && (runtime.seconds() < timeout));
+
+        // Stop drive motors
+        stopDriveMotors();
+
+        // TODO: Should there be a pause when stopping motors?
+//        stopDriveMotors(250); // Stop motors and delay 250 milliseconds
     }
 
     // Turn the robot a specific number of degrees (positive or negative) using Adafruit IMU
     // Note: Turns >= 360 degrees will be limited to < 360 degrees
-    // Turns will always honor the direction, even if the turn could be optimized by turning in the
-    // opposite direction.  E.g. a turn of -270 degrees will turn to the left instead of turning
-    // to the right 90 degrees.
     public void turnByDegreesIMU(double degrees, double speed) {
         // TODO: NOT TESTED
         String functionName = "turnByDegreesIMU";
-        double turnDegrees = 0;
-
-        // TODO: Implement this
+        double gain = 0.7; // Tune this value as needed +/- for accurate turns
+        double currentHeading;
+        double timeout = 10.0;  // TODO: what is appropriate timeout value for a turn?
+        double headingError;
+        double driveSteering;
+        double leftPower;
+        double rightPower;
+        Orientation angles;
 
         // Limit turnDegrees to 360 or less
 
+        runtime.reset();
+        do {
+            angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+            currentHeading = angles.firstAngle;
+            LINEAR_OPMODE.telemetry.addData(functionName, "currentHeading = %.3f", currentHeading);
+            LINEAR_OPMODE.telemetry.update();
+
+            // Optimize turn direction
+            if (currentHeading > 180.0) {
+                currentHeading -= 360.0;
+            }
+
+            headingError = currentHeading - degrees;
+            driveSteering = headingError * gain;
+
+            leftPower = DEFAULT_TURN_SPEED + driveSteering;
+            rightPower = DEFAULT_TURN_SPEED - driveSteering;
+
+            leftPower = Range.clip(leftPower, 0.0, 1.0);
+            rightPower = Range.clip(rightPower, 0.0, 1.0);
+
+            drive(leftPower,rightPower);
+
+        } while (currentHeading < degrees && (runtime.seconds() < timeout));
+
+        // Stop drive motors
+        stopDriveMotors();
+
+        // TODO: Should there be a pause when stopping motors?
+//        stopDriveMotors(250); // Stop motors and delay 250 milliseconds
 
     }
 
@@ -791,51 +1066,64 @@ public class HardwareMentor
         // Define Motors
 //        LFMotor   = hwMap.dcMotor.get("LFMotor");
 //        RFMotor  = hwMap.dcMotor.get("RFMotor");
+//        LMMotor = hwMap.dcMotor.get("LMMotor");
+//        RMMotor = hwMap.dcMotor.get("RMMotor");
         LBMotor   = hwMap.dcMotor.get("LBMotor");
         RBMotor  = hwMap.dcMotor.get("RBMotor");
         ChooChooMotor = hwMap.dcMotor.get("ChooChooMotor");
         BeaterMotor = hwMap.dcMotor.get("BeaterMotor");
 
+        // All Motor Map
+        allMotorMap.put(LBMotor, "LBMotor");
+        allMotorMap.put(RBMotor, "RBMotor");
+        allMotorMap.put(ChooChooMotor, "ChooChooMotor");
+        allMotorMap.put(BeaterMotor, "BeaterMotor");
+
+        // Drive motor map
+        driveMotorMap.put(LBMotor, "LBMotor");
+        driveMotorMap.put(RBMotor, "RBMotor");
+
         // Map the motors to their metadata, which includes encoder counts, etc.
 //        motorData.put(LFMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
 //        motorData.put(RFMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
-        motorData.put(LBMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
-        motorData.put(RBMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
-        motorData.put(ChooChooMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.TETRIX));
-        motorData.put(BeaterMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.TETRIX));
+//        motorData.put(LMMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
+//        motorData.put(RMMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
+        motorData.put(LBMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
+        motorData.put(RBMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
+        motorData.put(ChooChooMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.TETRIX));
+        motorData.put(BeaterMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.TETRIX));
 
 
         // Set starting motor directions
 //        LFMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
 //        RFMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+//        LMMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+//        RMMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         LBMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         RBMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         ChooChooMotor.setDirection(DcMotor.Direction.REVERSE);
         BeaterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        // Set all motors to run without encoders.
+        // Set drive motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-//        LFMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        RFMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        LBMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        RBMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDriveMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // Set mode for non-drive motors
         ChooChooMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BeaterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Set braking mode for each motor
+        // Set braking mode for drive motor
         // SDK default for year 2 is to put the motor in BRAKE mode.  Year 1 was FLOAT.
-//        LFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        RFMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        LBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        RBMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        setDriveMotorZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // Set braking mode for other non-drive motors
         ChooChooMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BeaterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Set all motors to zero power
-//        LFMotor.setPower(0.0);
-//        RFMotor.setPower(0.0);
-        LBMotor.setPower(0.0);
-        RBMotor.setPower(0.0);
+        // Set drive motors to zero power
+        stopDriveMotors();
+
+        // Set other motors to zero power
         ChooChooMotor.setPower(0.0);
         BeaterMotor.setPower(0.0);
 
@@ -844,6 +1132,8 @@ public class HardwareMentor
         // If not set, defaults to Tetrix  (1440) which impacts performance of AndyMark motors...
 //        LFMotor.setMaxSpeed((int)motorData.get(LFMotor).encoderCountPerRevolution);
 //        RFMotor.setMaxSpeed((int)motorData.get(RFMotor).encoderCountPerRevolution);
+//        LMMotor.setMaxSpeed((int)motorData.get(LFMotor).encoderCountPerRevolution);
+//        RMMotor.setMaxSpeed((int)motorData.get(RFMotor).encoderCountPerRevolution);
         LBMotor.setMaxSpeed((int)motorData.get(LBMotor).encoderCountPerRevolution);
         RBMotor.setMaxSpeed((int)motorData.get(RBMotor).encoderCountPerRevolution);
         ChooChooMotor.setMaxSpeed((int)motorData.get(ChooChooMotor).encoderCountPerRevolution);
@@ -1031,14 +1321,14 @@ public class HardwareMentor
         }
     }
 
-    // Initialize standard Hardware interfaces
+    // Initialize Hardware interfaces
+    // Use this version with non-LinearOpModes
     public void init(HardwareMap ahwMap) {
-        String functionName = "init";
-
         setLoggingMode(LoggingMode.NONE);
 
         // Save reference to Hardware map
         hwMap = ahwMap;
+
 
         try {
             initializeMotors();
@@ -1060,6 +1350,15 @@ public class HardwareMentor
         catch (RobotConfigurationException rce) {
             // TODO: Take action
         }
+
+    }
+
+    // Initialize Hardware interfaces
+    public void init(HardwareMap ahwMap, LinearOpMode om) {
+        String functionName = "init";
+
+        setLinearOpMode(om);
+        init(ahwMap);
 
     }
 

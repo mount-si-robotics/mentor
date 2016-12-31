@@ -160,16 +160,17 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
         robot.setDebugMode(false);
     }
 
+    public void testPlaySound() {
+        robot.playSound(robot.soundTest);
+    }
 
-
+////////////////////////////////////////////////////////
 
     @Override
     public void runOpMode() {
 
         // Initialize robot hardware
-//        robot.init(hardwareMap);
-
-//        robot.setOpMode(this);
+        robot.init(hardwareMap, this);
 
         // Set the default gamepad deadzone
         gamepad1.setJoystickDeadzone(robot.DEADZONE);
@@ -211,6 +212,7 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
 //        testSetDriveTrain();
 //        testGetDebugMode();
 //        testSetDebugMode();
+        testPlaySound();
 
         ////////
         //

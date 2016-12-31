@@ -8,12 +8,12 @@ import java.util.Map;
  */
 
 public class MotorMetadataMap {
-    public Map<MotorType, MotorMetadata> MOTOR_METADATA_MAP = new HashMap<>();
+    public Map<MotorMetadata.MotorType, MotorMetadata> MOTOR_METADATA_MAP = new HashMap<>();
 
     public void initialize() {
-        MOTOR_METADATA_MAP.put(MotorType.ANDYMARK_NEVEREST_3PT7, new MotorMetadata(
+        MOTOR_METADATA_MAP.put(MotorMetadata.MotorType.ANDYMARK_NEVEREST_3PT7, new MotorMetadata(
            "Andymark_Neverest_3.7",
-                MotorType.ANDYMARK_NEVEREST_3PT7,
+                MotorMetadata.MotorType.ANDYMARK_NEVEREST_3PT7,
                 12.0,
                 1784.0,
                 "3.7:1",
@@ -24,9 +24,9 @@ public class MotorMetadataMap {
                 "",
                 ""
         ));
-        MOTOR_METADATA_MAP.put(MotorType.ANDYMARK_NEVEREST_20, new MotorMetadata(
+        MOTOR_METADATA_MAP.put(MotorMetadata.MotorType.ANDYMARK_NEVEREST_20, new MotorMetadata(
                 "Andymark_Neverest_20",
-                MotorType.ANDYMARK_NEVEREST_20,
+                MotorMetadata.MotorType.ANDYMARK_NEVEREST_20,
                 12.0,
                 560.0,
                 "20:1",
@@ -37,9 +37,9 @@ public class MotorMetadataMap {
                 "",
                 ""
         ));
-        MOTOR_METADATA_MAP.put(MotorType.ANDYMARK_NEVEREST_40, new MotorMetadata(
+        MOTOR_METADATA_MAP.put(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40, new MotorMetadata(
                 "Andymark_Neverest_40",
-                MotorType.ANDYMARK_NEVEREST_40,
+                MotorMetadata.MotorType.ANDYMARK_NEVEREST_40,
                 12.0,
                 1120.0,
                 "40:1",
@@ -50,9 +50,9 @@ public class MotorMetadataMap {
                 "1478 oz-in.",
                 "12.8 oz-in."
                 ));
-        MOTOR_METADATA_MAP.put(MotorType.ANDYMARK_NEVEREST_60, new MotorMetadata(
+        MOTOR_METADATA_MAP.put(MotorMetadata.MotorType.ANDYMARK_NEVEREST_60, new MotorMetadata(
                 "Andymark_Neverest_60",
-                MotorType.ANDYMARK_NEVEREST_60,
+                MotorMetadata.MotorType.ANDYMARK_NEVEREST_60,
                 12.0,
                 1680.0,
                 "60:1",
@@ -63,9 +63,9 @@ public class MotorMetadataMap {
                 "",
                 ""
                 ));
-        MOTOR_METADATA_MAP.put(MotorType.TETRIX, new MotorMetadata(
+        MOTOR_METADATA_MAP.put(MotorMetadata.MotorType.TETRIX, new MotorMetadata(
                 "Tetrix",
-                MotorType.TETRIX,
+                MotorMetadata.MotorType.TETRIX,
                 12.0,
                 1440.0,
                 "",
@@ -76,10 +76,10 @@ public class MotorMetadataMap {
                 "",
                 ""
                 ));
-        MOTOR_METADATA_MAP.put(MotorType.OTHER, new MotorMetadata(
+        MOTOR_METADATA_MAP.put(MotorMetadata.MotorType.OTHER, new MotorMetadata(
                 // Fill in metadata for a custom motor
         ));
-        MOTOR_METADATA_MAP.put(MotorType.NONE, new MotorMetadata(
+        MOTOR_METADATA_MAP.put(MotorMetadata.MotorType.NONE, new MotorMetadata(
                 // Use default values in MotorMetadata class
         ));
     }

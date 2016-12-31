@@ -74,10 +74,8 @@ public class MentorAutonomous extends LinearOpMode {
          * step (using the FTC Robot Controller app on the phone).
          */
 
-        robot.init(hardwareMap);
+        robot.init(hardwareMap, this);
 //        robot.setDriveTrain(HardwareMentor.DriveTrain.TWO_WHEEL_REAR);
-
-        robot.setOpMode(this);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
