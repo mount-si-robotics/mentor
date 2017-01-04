@@ -32,15 +32,18 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.mentor;
 
-        import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-        import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-        import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-        import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-        import com.qualcomm.robotcore.hardware.ColorSensor;
-        import com.qualcomm.robotcore.hardware.DcMotor;
-        import com.qualcomm.robotcore.hardware.GyroSensor;
-        import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
-        import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.GyroSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -60,7 +63,7 @@ package org.firstinspires.ftc.mentor;
 public class MentorAutonomous extends LinearOpMode {
 
     /* Declare OpMode members. */
-    private ElapsedTime runtime = new ElapsedTime();
+    //private ElapsedTime runtime = new ElapsedTime();
 
     private HardwareMentor robot = new HardwareMentor();   // Use mentor hardware definition
 
@@ -77,12 +80,13 @@ public class MentorAutonomous extends LinearOpMode {
         robot.init(hardwareMap, this);
 //        robot.setDriveTrain(HardwareMentor.DriveTrain.TWO_WHEEL_REAR);
 
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        runtime.reset();
+        robot.runtime.reset();
 
         // Zero out the gyro after starting the robot.
         // This corrects any gyro drift that may occur if the robot is idle for a long period of
@@ -90,38 +94,34 @@ public class MentorAutonomous extends LinearOpMode {
         // FTA fixing a robot, Field maintenance, etc.
         robot.zeroGyro();
 
+        // Start the logging of measured acceleration
+        robot.imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+
 //        //Drive forward until robot reaches a white line
 //        // Start the robot moving forward, and then begin looking for a white line.
-//        robot.LBMotor.setPower(robot.APPROACH_SPEED);
-//        robot.RBMotor.setPower(robot.APPROACH_SPEED);
-//
-//        // run until the white line is seen OR the driver presses STOP;
-//        while (opModeIsActive() && (robot.ods.getLightDetected() < robot.WHITE_THRESHOLD)) {
-//
-//            // Display the light level while we are looking for the line
-//            telemetry.addData("Light Level",  robot.ods.getLightDetected());
-//            telemetry.update();
-//        }
-//
-//        // Stop the robot
-//        robot.LBMotor.setPower(0.0);
-//        robot.RBMotor.setPower(0.0);
+        robot.driveUntilLineDetected();
 
         // Follow line to beacon
+        // TODO: FINISH THIS
+        robot.driveFollowLineUntilDistance(5.0);
 
-        //
-//        while (opModeIsActive()) {
-//
-//        }
+        // Push button
+        robot.pushBeaconUntilMatchesAlliance();
+
+        // Go to the next beacon and do the same
+        robot.turnByDegrees(90.0);
+
+        robot.driveUntilLineDetected();
+
+        robot.driveFollowLineUntilDistance(5.0);
+
+        robot.pushBeaconUntilMatchesAlliance();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Status", "Run Time: " + robot.runtime.toString());
             telemetry.update();
 
-            // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-            // leftMotor.setPower(-gamepad1.left_stick_y);
-            // rightMotor.setPower(-gamepad1.right_stick_y);
         }
     }
 }

@@ -59,9 +59,9 @@ import java.util.List;
 public class MentorHardwareTestOpMode extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwareMentor robot = new HardwareMentor();  // Use mentor hardware definition
+    private HardwareMentor robot = new HardwareMentor();  // Use mentor hardware definition
 
-    private ElapsedTime runtime = new ElapsedTime();
+    //private ElapsedTime runtime = new ElapsedTime();
 
     MentorHardwareTestConfiguration mentorHardwareTestConfiguration = new MentorHardwareTestConfiguration();
     String menuConfigurationFile = "HardwareTest.json";
@@ -78,19 +78,19 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
 
     }
 
-    public void testGetLoggingMode() {
+    private void testGetLoggingMode() {
         HardwareMentor.LoggingMode loggingMode = robot.getLoggingMode();
         telemetry.addData("testGetLoggingMode: LoggingMode = ", loggingMode.toString());
         telemetry.update();
     }
 
-    public void testSetLoggingMode() {
+    private void testSetLoggingMode() {
         String functionName = "testSetLoggingMode";
         robot.setLoggingMode(HardwareMentor.LoggingMode.VERBOSE);
         testGetLoggingMode();
     }
 
-    public void testGetControllerMode() {
+    private void testGetControllerMode() {
         String functionName = "testGetControllerMode";
 
         HardwareMentor.ControllerMode controllerMode = robot.getControllerMode();
@@ -98,14 +98,14 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
         telemetry.update();
     }
 
-    public void testSetControllerMode() {
+    private void testSetControllerMode() {
         String functionName = "testSetControllerMode";
 
         robot.setControllerMode(HardwareMentor.ControllerMode.ARCADE);
         testGetControllerMode();
     }
 
-    public void testGetScaleMode() {
+    private void testGetScaleMode() {
         String functionName = "testGetScaleMode";
 
         HardwareMentor.ScaleMode scaleMode = robot.getScaleMode();
@@ -129,7 +129,7 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
         telemetry.update();
     }
 
-    public void testGetDriveTrain() {
+    private void testGetDriveTrain() {
         String functionName = "testGetDriveTrain";
 
         HardwareMentor.DriveTrain driveTrain = robot.getDriveTrain();
@@ -144,14 +144,14 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
         testGetDriveTrain();
     }
 
-    public void testGetDebugMode() {
+    private void testGetDebugMode() {
         String functionName = "testGetDebugMode";
 
         telemetry.addData(functionName + ": debug mode = ", robot.getDebugMode());
         telemetry.update();
     }
 
-    public void testSetDebugMode() {
+    private void testSetDebugMode() {
         String functionName = "testSetDebugMode";
 
         robot.setDebugMode(true);
@@ -160,8 +160,8 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
         robot.setDebugMode(false);
     }
 
-    public void testPlaySound() {
-        robot.playSound(robot.soundTest);
+    private void testPlaySound() {
+        //robot.playSound(robot.soundTest);
     }
 
 ////////////////////////////////////////////////////////
@@ -171,10 +171,6 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
 
         // Initialize robot hardware
         robot.init(hardwareMap, this);
-
-        // Set the default gamepad deadzone
-        gamepad1.setJoystickDeadzone(robot.DEADZONE);
-        gamepad2.setJoystickDeadzone(robot.DEADZONE);
 
         // TODO: Read menu configuration file
         //mentorHardwareTestConfiguration = new MentorHardwareTestConfiguration().deserialize("");
@@ -187,7 +183,7 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        runtime.reset();
+        robot.runtime.reset();
 
         // Zero out the gyro after starting the robot.
         // This corrects any gyro drift that may occur if the robot is idle for a long period of

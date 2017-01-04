@@ -77,14 +77,12 @@ public class MentorTeleOp extends LinearOpMode {
          */
         robot.init(hardwareMap, this);
 
-        gamepad1.setJoystickDeadzone(robot.DEADZONE);
-        gamepad2.setJoystickDeadzone(robot.DEADZONE);
-
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+
         robot.runtime.reset();
 
         // Zero out the gyro after starting the robot.
@@ -136,27 +134,33 @@ public class MentorTeleOp extends LinearOpMode {
             }
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-            robot.LBMotor.setPower(left);
-            robot.RBMotor.setPower(right);
+            robot.drive(left,right);
 
             if (gamepad1.a) {
                 // TODO: A
-                robot.ChooChooMotor.setPower(robot.CHOO_CHOO_MOTOR_SPEED);
+                //robot.ChooChooMotor.setPower(robot.CHOO_CHOO_MOTOR_SPEED);
+                robot.fireAndArmChooChooLauncher();
             }
 
             if (gamepad1.b) {
                 // TODO: B
-                robot.ChooChooMotor.setPower(0.0);
+                // failsafe just in case
+                robot.stopChooChooMotor();
             }
 
             if (gamepad1.x) {
                 // Turn on the beater motor
-                robot.BeaterMotor.setPower(robot.BEATER_MOTOR_SPEED);
+                if (!robot.isBeaterRunning) {
+                    robot.startBeaterMotor();
+                }
+                else {
+                    robot.reverseBeaterMotor();
+                }
             }
 
             if (gamepad1.y) {
                 // Turn off the beater motor
-                robot.BeaterMotor.setPower(0.0);
+                robot.stopBeaterMotor();
             }
 
 //            if (gamepad1.left_bumper) {
