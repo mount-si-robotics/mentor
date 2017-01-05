@@ -36,14 +36,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -58,28 +52,40 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="MentorAutonomous", group="Linear Opmode")  // @Autonomous(...) is the other common choice
+@Autonomous(name="MentorAutoVuforia", group="Linear Opmode")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class MentorAutonomous extends LinearOpMode {
+public class MentorAutoVuforia extends LinearOpMode {
 
     /* Declare OpMode members. */
-    //private ElapsedTime runtime = new ElapsedTime();
-
-    private HardwareMentor robot = new HardwareMentor();   // Use mentor hardware definition
+    private HardwareMentor robot = new HardwareMentor();
+    private MentorVuforiaNavigation nav = new MentorVuforiaNavigation();
+    private final double TARGET_DISTANCE = 400; // Millimeters
 
     @Override
     public void runOpMode() {
-        telemetry.addData("Status", "Initializing");
+        telemetry.addData("Status", "Initializing...");
         telemetry.update();
 
         // Initialize the robot hardware.
-        robot.init(hardwareMap, this);
+        //robot.init(hardwareMap, this);
+        nav.initialize(this);
+
+        // Activate Vuforia (this takes a few seconds)
+        nav.startTargetTracking();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+//        waitForStart();
+        while (! isStarted()) {
+            // Display any Nav Targets while we wait for the match to start
+            nav.anyTargetsVisible();
+            nav.addNavTelemetry();
+            telemetry.update();
+        }
+
+
         robot.runtime.reset();
 
         // Zero out the gyro after starting the robot.
@@ -88,34 +94,19 @@ public class MentorAutonomous extends LinearOpMode {
         // FTA fixing a robot, Field maintenance, etc.
         robot.zeroGyro();
 
-        // Start the logging of measured acceleration
-        robot.imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
-//        //Drive forward until robot reaches a white line
-//        // Start the robot moving forward, and then begin looking for a white line.
-        robot.driveUntilLineDetected();
-
-        // Follow line to beacon
-        // TODO: FINISH THIS
-        robot.driveFollowLineUntilDistance(5.0);
-
-        // Push button
-        robot.pushBeaconUntilMatchesAlliance();
-
-        // Go to the next beacon and do the same
-        robot.turnByDegrees(90.0);
-
-        robot.driveUntilLineDetected();
-
-        robot.driveFollowLineUntilDistance(5.0);
-
-        robot.pushBeaconUntilMatchesAlliance();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            if (nav.anyTargetsVisible()) {
+                nav.moveToTarget(TARGET_DISTANCE);
+            }
+            nav.addNavTelemetry();
             telemetry.addData("Status", "Run Time: " + robot.runtime.toString());
             telemetry.update();
 
+
         }
+        nav.stopTargetTracking();
     }
 }

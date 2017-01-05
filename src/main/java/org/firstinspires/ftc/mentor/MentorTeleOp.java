@@ -71,10 +71,7 @@ public class MentorTeleOp extends LinearOpMode {
         double max;
         double lastControllerSwitch = 0.0;
 
-        /* eg: Initialize the hardware variables. Note that the strings used here as parameters
-         * to 'get' must correspond to the names assigned during the robot configuration
-         * step (using the FTC Robot Controller app on the phone).
-         */
+        // Initialize the robot hardware.
         robot.init(hardwareMap, this);
 
         telemetry.addData("Status", "Initialized");
