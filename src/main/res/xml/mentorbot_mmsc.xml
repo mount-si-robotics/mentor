@@ -2,7 +2,7 @@
 <Robot type="FirstInspires-FTC">
     <ServoController name="Servo1" serialNumber="AI02QTCD">
     </ServoController>
-    <MotorController name="MtrCtrl1" serialNumber="AL00VG6R">
+    <MotorController name="MtrCtrl1" serialNumber="AL00VI3T">
         <Motor name="LBMotor" port="1" />
         <Motor name="RBMotor" port="2" />
     </MotorController>
@@ -14,7 +14,7 @@
         <DigitalDevice name="startposition" port="1" />
         <DigitalDevice name="strategy" port="2" />
     </DeviceInterfaceModule>
-    <MotorController name="MtrCtrl2" serialNumber="AL00VI3T">
+    <MotorController name="MtrCtrl2" serialNumber="AL00VG6R">
         <Motor name="ChooChooMotor" port="1" />
         <Motor name="BeaterMotor" port="2" />
     </MotorController>
