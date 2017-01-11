@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <MotorController name="MtrCtrl2" serialNumber="AL00VCIE">
+        <Motor name="LBMotor" port="1" />
+        <Motor name="RBMotor" port="2" />
+    </MotorController>
+    <MotorController name="MtrCtrl3" serialNumber="AL00VIOS">
+        <Motor name="BeaterMotor" port="1" />
+        <Motor name="ChooChooMotor" port="2" />
+    </MotorController>
+    <DeviceInterfaceModule name="cdim" serialNumber="AL00VCFQ">
+        <ColorSensor name="color" port="0" />
+        <OpticalDistanceSensor name="ods" port="0" />
+    </DeviceInterfaceModule>
+    <MotorController name="MtrCtrl1" serialNumber="AL00YCRD">
+        <Motor name="LFMotor" port="1" />
+        <Motor name="RFMotor" port="2" />
+    </MotorController>
+</Robot>
