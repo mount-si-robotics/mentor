@@ -11,11 +11,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -23,19 +24,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.TempUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Temperature;
 
-import static com.qualcomm.robotcore.util.Range.clip;
-import static java.lang.Math.PI;
-import static java.lang.Math.abs;
-import static java.lang.Math.nextAfter;
-import static java.lang.Thread.sleep;
-
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.util.ReadWriteFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.Math.PI;
+import static java.lang.Math.abs;
+import static java.lang.Thread.sleep;
 
 /**
  * This is NOT an opmode.
@@ -79,7 +75,7 @@ import java.util.Map;
  *
  */
 
-class HardwareMentor
+class Hardware9455
 {
     // Class name for logging purposes
     private String className = "HardwareMentor";
@@ -118,7 +114,7 @@ class HardwareMentor
     //double APPROACH_SPEED = 0.5; // drive speed
     private double DEFAULT_DRIVE_SPEED = 0.5; // drive speed to use when not specified
     private double DEFAULT_TURN_SPEED = 0.5;  // turn speed to use when not specified
-    private double DRIVE_WHEEL_DIAMETER_INCHES = 3.0;
+    private double DRIVE_WHEEL_DIAMETER_INCHES = 4.0;
     private boolean isSlowDrive = false;
     private double slowDriveDivisor = 2; // Divide speed by this number if in slow speed mode.
                                          // Dividing by 2 means speed is half the max speed
@@ -135,7 +131,9 @@ class HardwareMentor
     private double BEATER_MOTOR_SPEED = 0.8;
     boolean isBeaterRunning = false;
 
-    private static final double DRIVE_GEAR_REDUCTION = (1/3);     // This is < 1.0 if geared UP. 120 tooth on motor to 40 on wheel axle = 0.33
+//    private static final double DRIVE_GEAR_REDUCTION = (1/3);     // This is < 1.0 if geared UP. 120 tooth on motor to 40 on wheel axle = 0.33
+    private static final double DRIVE_GEAR_REDUCTION = 1.0;     // This is < 1.0 if geared UP. 120 tooth on motor to 40 on wheel axle = 0.33
+
 //    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
 //    double ENCODER_DEGREE_PER_COUNT = 360.0 / COUNTS_PER_MOTOR_REV;
 //    static final double     DRIVE_SPEED             = 0.6;
@@ -184,7 +182,7 @@ class HardwareMentor
     // Sane defaults
     private DriveTrain DRIVE_TRAIN = DriveTrain.NONE;
     private ScaleMode SCALE_MODE = ScaleMode.LINEAR;
-    public ControllerMode CONTROLLER_MODE = ControllerMode.TANK;
+    ControllerMode CONTROLLER_MODE = ControllerMode.TANK;
     private LoggingMode LOGGING_MODE = LoggingMode.NONE;
 
     // TODO: better name for log file
@@ -207,7 +205,7 @@ class HardwareMentor
     ///////////////////////////////////////////////////
 
     /* Constructor */
-    HardwareMentor(){
+    Hardware9455(){
         String functionName = "HardwareMentor";
         // Empty constructor
         // Nothing to see here...
@@ -1281,8 +1279,8 @@ class HardwareMentor
         }
 
         // Define Motors
-//        LFMotor   = hwMap.dcMotor.get("LFMotor");
-//        RFMotor  = hwMap.dcMotor.get("RFMotor");
+        LFMotor   = hwMap.dcMotor.get("LFMotor");
+        RFMotor  = hwMap.dcMotor.get("RFMotor");
 //        LMMotor = hwMap.dcMotor.get("LMMotor");
 //        RMMotor = hwMap.dcMotor.get("RMMotor");
         LBMotor   = hwMap.dcMotor.get("LBMotor");
@@ -1291,31 +1289,39 @@ class HardwareMentor
         BeaterMotor = hwMap.dcMotor.get("BeaterMotor");
 
         // All Motor Map
+        allMotorMap.put(LBMotor, "LFMotor");
+        allMotorMap.put(RBMotor, "RFMotor");
+//        allMotorMap.put(LBMotor, "LMMotor");
+//        allMotorMap.put(RBMotor, "RMMotor");
         allMotorMap.put(LBMotor, "LBMotor");
         allMotorMap.put(RBMotor, "RBMotor");
         allMotorMap.put(ChooChooMotor, "ChooChooMotor");
         allMotorMap.put(BeaterMotor, "BeaterMotor");
 
         // Drive motor map
+        driveMotorMap.put(LBMotor, "LFMotor");
+        driveMotorMap.put(RBMotor, "RFMotor");
+//        driveMotorMap.put(LBMotor, "LMMotor");
+//        driveMotorMap.put(RBMotor, "RMMotor");
         driveMotorMap.put(LBMotor, "LBMotor");
         driveMotorMap.put(RBMotor, "RBMotor");
 
         // Map the motors to their metadata, which includes encoder counts, etc.
-//        motorData.put(LFMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
-//        motorData.put(RFMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
-//        motorData.put(LMMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
-//        motorData.put(RMMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorType.ANDYMARK_NEVEREST_40));
+        motorData.put(LFMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
+        motorData.put(RFMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
+//        motorData.put(LMMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
+//        motorData.put(RMMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
         motorData.put(LBMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
         motorData.put(RBMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
-        motorData.put(ChooChooMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
+        motorData.put(ChooChooMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.TETRIX));
         motorData.put(BeaterMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.TETRIX));
 
 
         // Set starting motor directions
-//        LFMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-//        RFMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-//        LMMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-//        RMMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        LFMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        RFMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
+//        LMMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+//        RMMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         LBMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         RBMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         ChooChooMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -1326,7 +1332,7 @@ class HardwareMentor
         setDriveMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Set mode for non-drive motors
-        ChooChooMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        ChooChooMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BeaterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Set braking mode for drive motor
@@ -1390,13 +1396,13 @@ class HardwareMentor
         // Get Sensors from Hardware Map
         cdim = hwMap.deviceInterfaceModule.get("cdim");
 //        gyro = hwMap.gyroSensor.get("gyro");
-        imu = hwMap.get(BNO055IMU.class, "imu");
-//        color = hwMap.colorSensor.get("color");
-        afcolor = hwMap.colorSensor.get("afcolor");
+//        imu = hwMap.get(BNO055IMU.class, "imu");
+        color = hwMap.colorSensor.get("color");
+//        afcolor = hwMap.colorSensor.get("afcolor");
         ods = hwMap.opticalDistanceSensor.get("ods");
-        allianceChannel = hwMap.digitalChannel.get("alliance");
-        startPositionChannel = hwMap.digitalChannel.get("startposition");
-        strategyChannel = hwMap.digitalChannel.get("strategy");
+//        allianceChannel = hwMap.digitalChannel.get("alliance");
+//        startPositionChannel = hwMap.digitalChannel.get("startposition");
+//        strategyChannel = hwMap.digitalChannel.get("strategy");
 //        irBeamBreak = hwMap.digitalChannel.get("irBeamBreak");
 
 
@@ -1421,19 +1427,19 @@ class HardwareMentor
         //
         // Adafruit IMU
         //
-        if (imu != null) {
-            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-            parameters.loggingEnabled = true;
-            parameters.loggingTag = "IMU";
-            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-            parameters.temperatureUnit = BNO055IMU.TempUnit.FARENHEIT; // Set temperature unit.
-
-            // Calibration data file is found in FIRST/settings/<data file>
-            // Calibration data increases the accuracy of the IMU and reduces the time needed for initialization.
-            parameters.calibrationDataFile = "MentorAdafruitIMUCalibration.json"; // see the calibration sample opmode
-            imu.initialize(parameters);
-        }
+//        if (imu != null) {
+//            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+//            parameters.loggingEnabled = true;
+//            parameters.loggingTag = "IMU";
+//            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+//            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+//            parameters.temperatureUnit = BNO055IMU.TempUnit.FARENHEIT; // Set temperature unit.
+//
+//            // Calibration data file is found in FIRST/settings/<data file>
+//            // Calibration data increases the accuracy of the IMU and reduces the time needed for initialization.
+//            parameters.calibrationDataFile = "MentorAdafruitIMUCalibration.json"; // see the calibration sample opmode
+//            imu.initialize(parameters);
+//        }
 
         //
         // Modern Robotics Color Sensor
@@ -1480,53 +1486,53 @@ class HardwareMentor
         // Turn off CDIM red and blue LEDs
         setCdimLEDs(false, false);
 
-        //
-        // Alliance configuration switch
-        //
-        setAllianceFromSwitch();
-
-        if (alliance == Alliance.BLUE) {
-            setCdimLEDs(true, false);
-        } else {
-            setCdimLEDs(false, true);
-        }
-
-        //
-        // Start Position configuration switch
-        //
-        if (startPositionChannel != null) {
-            startPositionChannel.setMode(DigitalChannelController.Mode.INPUT);
-            if (startPositionChannel.getState()) {
-                setStartPosition(StartPosition.POSITION1);
-            } else {
-                setStartPosition(StartPosition.POSITION2);
-            }
-        }
-        else {
-            setStartPosition(StartPosition.POSITION1);
-        }
-
-        //
-        // Strategy configuration switch
-        //
-        if (strategyChannel != null) {
-            strategyChannel.setMode(DigitalChannelController.Mode.INPUT);
-            if (strategyChannel.getState()) {
-                setStrategy(Strategy.STRATEGY1);
-            } else {
-                setStrategy(Strategy.STRATEGY2);
-            }
-        }
-        else {
-            setStrategy(Strategy.STRATEGY1);
-        }
-
-        //
-        // Configuration Potentiometer
-        //
-        if (configurationPot != null) {
-            // TODO: Add code to read potentiometer if used.
-        }
+//        //
+//        // Alliance configuration switch
+//        //
+//        setAllianceFromSwitch();
+//
+//        if (alliance == Alliance.BLUE) {
+//            setCdimLEDs(true, false);
+//        } else {
+//            setCdimLEDs(false, true);
+//        }
+//
+//        //
+//        // Start Position configuration switch
+//        //
+//        if (startPositionChannel != null) {
+//            startPositionChannel.setMode(DigitalChannelController.Mode.INPUT);
+//            if (startPositionChannel.getState()) {
+//                setStartPosition(StartPosition.POSITION1);
+//            } else {
+//                setStartPosition(StartPosition.POSITION2);
+//            }
+//        }
+//        else {
+//            setStartPosition(StartPosition.POSITION1);
+//        }
+//
+//        //
+//        // Strategy configuration switch
+//        //
+//        if (strategyChannel != null) {
+//            strategyChannel.setMode(DigitalChannelController.Mode.INPUT);
+//            if (strategyChannel.getState()) {
+//                setStrategy(Strategy.STRATEGY1);
+//            } else {
+//                setStrategy(Strategy.STRATEGY2);
+//            }
+//        }
+//        else {
+//            setStrategy(Strategy.STRATEGY1);
+//        }
+//
+//        //
+//        // Configuration Potentiometer
+//        //
+//        if (configurationPot != null) {
+//            // TODO: Add code to read potentiometer if used.
+//        }
 
     }
 

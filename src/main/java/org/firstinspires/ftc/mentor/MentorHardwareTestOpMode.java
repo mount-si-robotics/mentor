@@ -32,14 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.mentor;
 
-import com.google.gson.Gson;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -79,21 +73,21 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
     }
 
     private void testGetLoggingMode() {
-        HardwareMentor.LoggingMode loggingMode = robot.getLoggingMode();
+        LoggingMode loggingMode = robot.getLoggingMode();
         telemetry.addData("testGetLoggingMode: LoggingMode = ", loggingMode.toString());
         telemetry.update();
     }
 
     private void testSetLoggingMode() {
         String functionName = "testSetLoggingMode";
-        robot.setLoggingMode(HardwareMentor.LoggingMode.VERBOSE);
+        robot.setLoggingMode(LoggingMode.VERBOSE);
         testGetLoggingMode();
     }
 
     private void testGetControllerMode() {
         String functionName = "testGetControllerMode";
 
-        HardwareMentor.ControllerMode controllerMode = robot.getControllerMode();
+        ControllerMode controllerMode = robot.getControllerMode();
         telemetry.addData(functionName + ": Controller Mode = ", controllerMode.toString());
         telemetry.update();
     }
@@ -101,14 +95,14 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
     private void testSetControllerMode() {
         String functionName = "testSetControllerMode";
 
-        robot.setControllerMode(HardwareMentor.ControllerMode.ARCADE);
+        robot.setControllerMode(ControllerMode.ARCADE);
         testGetControllerMode();
     }
 
     private void testGetScaleMode() {
         String functionName = "testGetScaleMode";
 
-        HardwareMentor.ScaleMode scaleMode = robot.getScaleMode();
+        ScaleMode scaleMode = robot.getScaleMode();
         telemetry.addData(functionName + ": scale mode = ", scaleMode);
         telemetry.update();
     }
@@ -116,23 +110,23 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
     public void testSetScaleMode() {
         String functionName = "testSetScaleMode";
 
-        robot.setScaleMode(HardwareMentor.ScaleMode.CUBE);
+        robot.setScaleMode(ScaleMode.CUBE);
         testGetScaleMode();
     }
 
     public void testScaleValue() {
         String functionName = "testScaleValue";
 
-        telemetry.addData(functionName + ": linear 0.5", robot.scaleValue(0.5, HardwareMentor.ScaleMode.LINEAR));
-        telemetry.addData(functionName + ": square 0.5", robot.scaleValue(0.5, HardwareMentor.ScaleMode.SQUARE));
-        telemetry.addData(functionName + ": cube 0.5", robot.scaleValue(0.5, HardwareMentor.ScaleMode.CUBE));
+        telemetry.addData(functionName + ": linear 0.5", robot.scaleValue(0.5, ScaleMode.LINEAR));
+        telemetry.addData(functionName + ": square 0.5", robot.scaleValue(0.5, ScaleMode.SQUARE));
+        telemetry.addData(functionName + ": cube 0.5", robot.scaleValue(0.5, ScaleMode.CUBE));
         telemetry.update();
     }
 
     private void testGetDriveTrain() {
         String functionName = "testGetDriveTrain";
 
-        HardwareMentor.DriveTrain driveTrain = robot.getDriveTrain();
+        DriveTrain driveTrain = robot.getDriveTrain();
         telemetry.addData(functionName + ": drive train = ", driveTrain);
         telemetry.update();
     }
@@ -140,7 +134,7 @@ public class MentorHardwareTestOpMode extends LinearOpMode {
     public void testSetDriveTrain() {
         String functionName = "testSetDriveTrain";
 
-        robot.setDriveTrain(HardwareMentor.DriveTrain.TWO_WHEEL_CENTER);
+        robot.setDriveTrain(DriveTrain.TWO_WHEEL_CENTER);
         testGetDriveTrain();
     }
 

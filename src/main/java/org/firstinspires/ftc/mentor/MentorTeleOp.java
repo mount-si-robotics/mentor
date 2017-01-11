@@ -32,15 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.mentor;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import static android.R.attr.max;
-import static android.R.attr.right;
 import static java.lang.Math.abs;
 
 /**
@@ -71,6 +65,22 @@ public class MentorTeleOp extends LinearOpMode {
         double max;
         double lastControllerSwitch = 0.0;
 
+        boolean a_released = true;
+        boolean b_released = true;
+        boolean x_released = true;
+        boolean y_released = true;
+        boolean L3_released = true;
+//        boolean R3_released = true;
+//        boolean LeftBumper_released = true;
+//        boolean RightBumper_released = true;
+        boolean DpadLeft_released = true;
+//        boolean DpadRight_released = true;
+//        boolean DpadUp_released = true;
+//        boolean DpadDown_released = true;
+//        boolean Guide_released = true;
+//        boolean Back_released = true;
+//        boolean Start_released = true;
+
         // Initialize the robot hardware.
         robot.init(hardwareMap, this);
 
@@ -78,7 +88,12 @@ public class MentorTeleOp extends LinearOpMode {
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+//        waitForStart();
+
+        while (! isStarted()) {
+            telemetry.addData(">>> ", "Press Start");
+//            telemetry.addData("Alliance:")
+        }
 
         robot.runtime.reset();
 
@@ -121,104 +136,229 @@ public class MentorTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Status", "Run Time: " + robot.runtime.toString());
 
-            if (robot.CONTROLLER_MODE == HardwareMentor.ControllerMode.TANK) {
+            if (robot.CONTROLLER_MODE == ControllerMode.TANK) {
                 left = -gamepad1.left_stick_y;
                 right = -gamepad1.right_stick_y;
-            }
-            else {
+            } else {
                 left = -gamepad1.left_stick_y + -gamepad1.left_stick_x;
                 right = -gamepad1.left_stick_y - -gamepad1.left_stick_x;
             }
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-            robot.drive(left,right);
+            if (robot.isSlowDrive()) {
+                robot.drive(left / robot.getSlowDriveDivisor(), right / robot.getSlowDriveDivisor());
+            } else {
+                robot.drive(left, right);
+            }
+
+            ////////
+            //
+            // Debouncing buttons
+            //
+            // It is possible for buttons to be read multiple times through a loop, triggering
+            // actions multiple times unintentionally.  Using a debounce routine fixes this issue
+            // by ignoring further presses of a button until it has been released.
+            //
+            // Pattern:
+            // Use a boolean variable to track whether a button has been released yet.
+            // boolean x_released = true; // Button is not currently pressed
+            // if (gamepad1.x) {  // X Button is pressed
+            //     if (x_released) { if the x button is not currently pressed...
+            //         x_released = false; // mark the button as not having been released yet
+            //         // Do an action here
+            //     }
+            // }
+            // else {
+            //     x_released = true;
 
             if (gamepad1.a) {
-                // TODO: A
-                //robot.ChooChooMotor.setPower(robot.CHOO_CHOO_MOTOR_SPEED);
-                robot.fireAndArmChooChooLauncher();
+                // A Button
+                if (a_released) {
+                    a_released = false;
+                    robot.fireAndArmChooChooLauncher();
+                }
+            }
+            else {
+                a_released = true;
             }
 
             if (gamepad1.b) {
-                // TODO: B
+                // B Button
                 // failsafe just in case
-                robot.stopChooChooMotor();
+                if (b_released) {
+                    b_released = false;
+                    robot.stopChooChooMotor();
+                }
+            }
+            else {
+                b_released = true;
             }
 
             if (gamepad1.x) {
-                // Turn on the beater motor
-                if (!robot.isBeaterRunning) {
-                    robot.startBeaterMotor();
+                // X Button
+
+                if (x_released) {
+                    x_released = false;
+                    // Turn on the beater motor
+                    if (!robot.isBeaterRunning) {
+                        robot.startBeaterMotor();
+                    } else {
+                        robot.reverseBeaterMotor();
+                    }
                 }
-                else {
-                    robot.reverseBeaterMotor();
-                }
+            }
+            else {
+                x_released = true;
             }
 
             if (gamepad1.y) {
-                // Turn off the beater motor
-                robot.stopBeaterMotor();
+                if (y_released) {
+                    y_released = false;
+                    // Turn off the beater motor
+                    robot.stopBeaterMotor();
+                }
+            }
+            else {
+                y_released = true;
             }
 
 //            if (gamepad1.left_bumper) {
 //                // TODO: left bumper
+//                if (LeftBumper_released) {
+//                }
+//                else {
+//                    LeftBumper_released = true;
+//                }
 //            }
+//
 //            if (gamepad1.right_bumper) {
 //                // TODO: right bumper
+//                if (RightBumper_released) {
+//                }
+//                else {
+//                    RightBumper_released = true;
+//                }
 //            }
-//
-//            if (gamepad1.left_stick_button) {
-//                // TODO: L3
-//            }
+
+            if (gamepad1.left_stick_button) {
+                // L3 Button
+
+                if (L3_released) {
+                    L3_released = false;
+                    if (!robot.isSlowDrive()) {
+                        robot.setSlowDrive(true);
+                    } else {
+                        robot.setSlowDrive(false);
+                    }
+                }
+            }
+            else {
+                L3_released = true;
+            }
 //
 //            if (gamepad1.right_stick_button) {
-//                // TODO: R3
+//                // R3 Button
+//                if (R3_released) {
+//                    R3_released = false;
+//                }
 //            }
-//
-            if (gamepad1.dpad_left) {
+//            else {
+//                R3_released = true;
+//            }
 
+        if (gamepad1.dpad_left) {
+            if (DpadLeft_released) {
+                DpadLeft_released = false;
                 // Wait 2 seconds before allowing another controller switch
                 if ((robot.runtime.seconds() - lastControllerSwitch) > 2.0) {
-                    if (robot.CONTROLLER_MODE == HardwareMentor.ControllerMode.TANK) {
-                        robot.setControllerMode(HardwareMentor.ControllerMode.ARCADE);
+                    if (robot.CONTROLLER_MODE == ControllerMode.TANK) {
+                        robot.setControllerMode(ControllerMode.ARCADE);
                     } else {
-                        robot.setControllerMode(HardwareMentor.ControllerMode.TANK);
+                        robot.setControllerMode(ControllerMode.TANK);
                     }
                     lastControllerSwitch = robot.runtime.seconds();
                 }
             }
+        }
+        else {
+            DpadLeft_released = true;
+        }
+
+//        if (gamepad1.dpad_right) {
+//            // DPad Right
+//            if (DpadRight_released) {
+//                DpadRight_released = false;
+//                // Action
 //
-//            if (gamepad1.dpad_right) {
-//                // TODO: DR
 //            }
+//        }
+//        else {
+//            DpadRight_released = true;
+//        }
+
+//        if (gamepad1.dpad_up) {
+//            // DPad Up
+//            if (DpadUp_released) {
+//                DpadUp_released = false;
+//                // Action
 //
-//            if (gamepad1.dpad_up) {
-//                // TODO: DU
 //            }
-//
+//        }
+//        else {
+//            DpadUp_released = true;
+//        }
+
 //            if (gamepad1.dpad_down) {
-//                // TODO: DD
-//            }
+//                // DPad Down
+//                if (DpadDown_released) {
+//                    DpadDown_released = false;
+//                    // Action
 //
+//                }
+//            }
+//            else {
+//                DpadDown_released = true;
+//            }
+
 //            if (gamepad1.guide) {
-//                // TODO: back
-//            }
+//                // Guide Button
+//                if (Guide_released) {
+//                    Guide_released = false;
+//                    // Action
 //
+//                }
+//            }
+//            else {
+//                Guide_released = true;
+//            }
+
 //            if (gamepad1.back) {
-//                // TODO: back
-//            }
+//                // Back Button
+//                if (Back_released) {
+//                    Back_released = false;
+//                    // Action
 //
-//            if (gamepad1.start) {
-//                // TODO: start
+//                }
+//            }
+//            else {
+//                Back_released = true;
 //            }
 
-
+//            if (gamepad1.start) {
+//                // Start Button
+//                if (Start_released) {
+//                    Start_released = false;
+//                    // Action
+//
+//                }
+//            }
+//            else {
+//                Start_released = true;
+//            }
 
 //            telemetry.addData("left",  "%.2f", left);
 //            telemetry.addData("right", "%.2f", right);
             telemetry.update();
-
-
         }
     }
 }

@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -17,6 +18,8 @@ import org.firstinspires.ftc.teamcode.mentor.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.mmPerInch;
 
 
 /**
@@ -29,6 +32,19 @@ import java.util.List;
 
 class MentorVuforiaNavigation {
     private static final int NUM_TARGETS = 4; // Number of Vuforia targets
+
+    private static final boolean DISPLAY_CAMERA = false; // If true, camera view will display on robot
+                                                         // controller phone. Performance will be slower
+                                                         // when displaying the camera.
+
+    // Update this value with the actual robot width
+    private static final double ROBOT_WIDTH_INCHES = 17.0;
+    private static final double ROBOT_WIDTH_MM = ROBOT_WIDTH_INCHES * DistanceUnit.mmPerInch;
+
+    // FTC Field width in millimeters
+    // The FTC field is ~11'10" center-to-center of the glass panels
+    private static final double mmFTCFieldWidth  = (12*12 - 2) * DistanceUnit.mmPerInch;
+
     private static final double ON_AXIS = 10; // Within 1.0 cm on axis
     private static final double  OFFSET_ERROR   =  20;      // Within 2.0 cm of final target
 
@@ -43,13 +59,14 @@ class MentorVuforiaNavigation {
     private String targetName;
 
     // Do NOT use the key below!  Get your own!
+    // Key below is registered to Mark Dolecki.
     private String VUFORIA_KEY = "AaUHMEr/////AAAAGTV5o70tjUyckRNm8KD0JNUpURBXvV4FXi5sxMH/WpoWEPKm2xWXPG1sR0f6D4uRvFj1YEk+U4+Eqac7+IchrkEf8CfsAbG5gE0dsHdGI2jMBerZ/SlVZADiiMFMSlitBzf7By2v0e/ZaioU8DGs3vkzyqsS1BeCEv7eEjBEPpzOg/uGRZLB0lMBuDC8dv3ZPOS1Ts1Y+7hTIGdA2Q/XBh+4RG/WFzwag2qbjYGcYiAsyUfThlHdGbKnG70tT9f72ava357/3VVW3w6NyDTI509bCVrVUOhNZKmQLLc2xYuYAn6PSyokNSc8vLEN1f51Y82z4/k3qYzD1w71LymvqarSKMtwWh7TVR+MB7lEsBS/";
 
     // Position of the camera in relation to the robot
-    // TODO: Update these values for your robot!!!
-    private static final int CAMERA_FORWARD_DISPLACEMENT  = 110;   // Camera is 110 mm in front of robot center
-    private static final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // Camera is 200 mm above ground
-    private static final int CAMERA_LEFT_DISPLACEMENT     = 0;     // Camera is ON the robots center line
+    // Update these values for your robot!!!
+    private static final int CAMERA_FORWARD_DISPLACEMENT  = (int) (8.5 * DistanceUnit.mmPerInch); //110;   // Camera is 110 mm in front of robot center
+    private static final int CAMERA_VERTICAL_DISPLACEMENT = (int) (14.5 * DistanceUnit.mmPerInch); //200;   // Camera is 200 mm above ground
+    private static final int CAMERA_LEFT_DISPLACEMENT     = (int) (-1.5 * DistanceUnit.mmPerInch);     // Camera is ON the robots center line
 
     private static final double  YAW_GAIN       =  0.018;   // Rate at which we respond to heading error
     private static final double  LATERAL_GAIN   =  0.0027;  // Rate at which we respond to off-axis error
@@ -79,16 +96,67 @@ class MentorVuforiaNavigation {
         relativeBearing = 0;
     }
 
+    // Get robot X coordinate
+    public double getRobotX() {
+        String functionName = "getRobotX";
+
+        return robotX;
+    }
+
+    // Get robot Y coordinate
+    public double getRobotY() {
+        String functionName = "getRobotY";
+
+        return robotY;
+    }
+
+    // Get robot bearing
+    public double getRobotBearing() {
+        String functionName = "getRobotBearing";
+
+        return robotBearing;
+    }
+
+    // Get Target Range
+    public double getTargetRange() {
+        String functionName = "getTargetRange";
+
+        return targetRange;
+    }
+
+    // Get Target Bearing
+    public double getTargetBearing() {
+        String functionName = "getTargetBearing";
+
+        return targetBearing;
+    }
+
+    // Get Relative Bearing
+    public double getRelativeBearing() {
+        String functionName = "getRelativeBearing";
+
+        return relativeBearing;
+    }
+
     // Initialize Vuforia
     void initialize(LinearOpMode om) {
         String functionName = "initialize";
+        VuforiaLocalizer.Parameters parameters;
 
         opMode = om;
         //hardwareMentor = hm;
 
-//        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);  // Use this line to see camera display
-
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(); // use this line to turn off the camera display (faster)
+        // Choose one of the following two options
+        if (DISPLAY_CAMERA) {
+            // Display camera view on the robot controller phone screen.
+            // Performance will be slower.
+            parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
+        }
+        else {
+            // Camera view will not be displayed.
+            // Performance will be faster.
+            parameters = new VuforiaLocalizer.Parameters();
+        }
 
         // Get your own Vuforia key at  https://developer.vuforia.com/license-manager
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
@@ -97,18 +165,16 @@ class MentorVuforiaNavigation {
         parameters.useExtendedTracking = false;
         VuforiaLocalizer vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
-        /**
-         * Load the data sets that for the trackable objects we wish to track.
-         * These particular data sets are stored in the 'assets' part of our application
-         * They represent the four image targets used in the 2016-17 FTC game.
-         */
+        // Load the data sets that for the trackable objects we wish to track.
+        // These particular data sets are stored in the 'assets' part of our application
+        // They represent the four image targets used in the 2016-17 FTC game.
         targets = vuforia.loadTrackablesFromAsset("FTC_2016-17");
         targets.get(0).setName("Blue Near");  // wheels
         targets.get(1).setName("Red Far");    // tools
         targets.get(2).setName("Blue Far");   // legos
         targets.get(3).setName("Red Near");   // gears
 
-        /** For convenience, gather together all the trackable objects in one easily-iterable collection */
+        // For convenience, gather together all the trackable objects in one easily-iterable collection
         List<VuforiaTrackable> allTrackables = new ArrayList<>();
         allTrackables.addAll(targets);
 
@@ -121,28 +187,31 @@ class MentorVuforiaNavigation {
                         AxesReference.EXTRINSIC, AxesOrder.XYZ,
                         AngleUnit.DEGREES, 90, 0, -90));
 
-        /**
-         * Create a transformation matrix describing where the phone is on the robot.
-         *
-         * The coordinate frame for the robot looks the same as the field.
-         * The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the Y axis.
-         * Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
-         *
-         * The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
-         * pointing to the LEFT side of the Robot.  If we consider that the camera and screen will be
-         * in "Landscape Mode" the upper portion of the screen is closest to the front of the robot.
-         *
-         * If using the rear (High Res) camera:
-         * We need to rotate the camera around it's long axis to bring the rear camera forward.
-         * This requires a negative 90 degree rotation on the Y axis
-         *
-         * If using the Front (Low Res) camera
-         * We need to rotate the camera around it's long axis to bring the FRONT camera forward.
-         * This requires a Positive 90 degree rotation on the Y axis
-         *
-         * Next, translate the camera lens to where it is on the robot.
-         * In this example, it is centered (left to right), but 110 mm forward of the middle of the robot, and 200 mm above ground level.
-         */
+
+        // Create a transformation matrix describing where the phone is on the robot.
+        //
+        // The coordinate frame for the robot looks the same as the field.
+        // The robot's "forward" direction is facing out along X axis, with the LEFT side facing out
+        // along the Y axis.
+        //
+        // Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
+        //
+        // The phone starts out lying flat, with the screen facing Up and with the physical top of
+        // the phone pointing to the LEFT side of the Robot.  If we consider that the camera and
+        // screen will be in "Landscape Mode" the upper portion of the screen is closest to the
+        // front of the robot.
+        //
+        // If using the rear (High Res) camera:
+        // We need to rotate the camera around it's long axis to bring the rear camera forward.
+        // This requires a negative 90 degree rotation on the Y axis
+        //
+        // If using the Front (Low Res) camera
+        // We need to rotate the camera around it's long axis to bring the FRONT camera forward.
+        // This requires a Positive 90 degree rotation on the Y axis
+        //
+        // Next, translate the camera lens to where it is on the robot.
+        // In this example, it is centered (left to right), but 110 mm forward of the middle of the
+        // robot, and 200 mm above ground level.
 
         OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
