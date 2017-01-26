@@ -91,6 +91,9 @@ class HardwareMentor
 
     private static final double MM_TO_INCHES = 25.4;
 
+    // Maximum number of motors allowed by rules
+    private static final int MAX_MOTORS_ALLOWED = 8;
+
     /* Public OpMode members. */
     private boolean DEBUG_MODE = false;  // Debugging is off by default
 
@@ -102,6 +105,9 @@ class HardwareMentor
     private DcMotor  RBMotor  = null;  // Right Back drive
     private DcMotor  ChooChooMotor = null;  // Launcher motor
     private DcMotor  BeaterMotor = null;    // Ball gather motor
+//    private DcMotor  LiftMotor1 = null;  // Lift motor
+//    private DcMotor  LiftMotor2 = null;  // Lift motor 2
+//    private DcMotor  SlideMotor = null; // LinearSlide motor
 
     // Maps to contain the motors allocated on this robot.
     // Add motors to the map(s) during init
@@ -201,6 +207,11 @@ class HardwareMentor
     private MentorHardwareRobotConfiguration robotConfigurationData = null;
     private String robotConfigurationDataFile = null;
 
+    /*
+     * Robot components
+     */
+//    LiftMechanism lift = null;
+//    LinearSlide slide = null;
 
 
     ///////////////////////////////////////////////////
@@ -1289,12 +1300,18 @@ class HardwareMentor
         RBMotor  = hwMap.dcMotor.get("RBMotor");
         ChooChooMotor = hwMap.dcMotor.get("ChooChooMotor");
         BeaterMotor = hwMap.dcMotor.get("BeaterMotor");
+//        LiftMotor1 = hwMap.dcMotor.get("LiftMotor1");
+//        LiftMotor2 = hwMap.dcMotor.get("LiftMotor2");
+//        SlideMotor = hwMap.dcMotor.get("SlideMotor");
 
         // All Motor Map
         allMotorMap.put(LBMotor, "LBMotor");
         allMotorMap.put(RBMotor, "RBMotor");
         allMotorMap.put(ChooChooMotor, "ChooChooMotor");
         allMotorMap.put(BeaterMotor, "BeaterMotor");
+//        allMotorMap.put(LiftMotor1, "LiftMotor1");
+//        allMotorMap.put(LiftMotor2, "LiftMotor2");
+//        allMotorMap.put(SlideMotor, "SlideMotor");
 
         // Drive motor map
         driveMotorMap.put(LBMotor, "LBMotor");
@@ -1309,7 +1326,9 @@ class HardwareMentor
         motorData.put(RBMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
         motorData.put(ChooChooMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
         motorData.put(BeaterMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.TETRIX));
-
+//        motorData.put(LiftMotor1, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
+//        motorData.put(LiftMotor2, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
+//        motorData.put(SlideMotor, motorMetadataMap.MOTOR_METADATA_MAP.get(MotorMetadata.MotorType.ANDYMARK_NEVEREST_40));
 
         // Set starting motor directions
 //        LFMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
@@ -1319,7 +1338,10 @@ class HardwareMentor
         LBMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         RBMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         ChooChooMotor.setDirection(DcMotor.Direction.REVERSE);
-        BeaterMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        BeaterMotor.setDirection(DcMotor.Direction.REVERSE);
+//        LiftMotor1.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+//        LiftMotor2.setDirection(DcMotor.Direction.FORWARD); // Set to FORWARD if using AndyMark motors
+//        SlideMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
 
         // Set drive motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
@@ -1328,6 +1350,9 @@ class HardwareMentor
         // Set mode for non-drive motors
         ChooChooMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         BeaterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        LiftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        LiftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        SlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set braking mode for drive motor
         // SDK default for year 2 is to put the motor in BRAKE mode.  Year 1 was FLOAT.
@@ -1336,6 +1361,9 @@ class HardwareMentor
         // Set braking mode for other non-drive motors
         ChooChooMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         BeaterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        LiftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        LiftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        SlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set drive motors to zero power
         stopDriveMotors();
@@ -1343,6 +1371,9 @@ class HardwareMentor
         // Set other motors to zero power
         ChooChooMotor.setPower(0.0);
         BeaterMotor.setPower(0.0);
+//        LiftMotor1.setPower(0.0);
+//        LiftMotor2.setPower(0.0);
+//        SlideMotor.setPower(0.0);
 
         // *** No longer valid! See note for 1/3/2017 below.
         // Set motor max speed based on encoder counts from motor metadata
@@ -1366,6 +1397,11 @@ class HardwareMentor
 //        RBMotor.setMaxSpeed((int)motorData.get(RBMotor).encoderCountPerRevolution);
 //        ChooChooMotor.setMaxSpeed((int)motorData.get(ChooChooMotor).encoderCountPerRevolution);
 //        BeaterMotor.setMaxSpeed((int)motorData.get(BeaterMotor).encoderCountPerRevolution);
+
+        // Validate the number of motors is less than or equal to the maximum number allowed
+        if (allMotorMap.size() > MAX_MOTORS_ALLOWED) {
+            throw new RobotConfigurationException("Too many motors configured!");
+        }
     }
 
     // Initialize servos
@@ -1579,6 +1615,11 @@ class HardwareMentor
             // TODO: Take action
         }
 
+        // Add a LiftMechanism
+//        lift = new LiftMechanism(LINEAR_OPMODE, LiftMotor1, LiftMotor2, motorData, 10.0);
+
+        // Add a LinearSlide
+//        slide = new LinearSlide(LINEAR_OPMODE, SlideMotor, motorData, 5.0, 0.5, 1.0, false);
     }
 
     // Initialize Hardware interfaces
