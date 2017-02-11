@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.mentor;
+package org.firstinspires.ftc.mentor.common;
 
 /**
  * Created by markdolecki on 12/28/16.

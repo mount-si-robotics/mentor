@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.mentor;
+package org.firstinspires.ftc.mentor.common;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.mentor.HardwareMentor;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -30,7 +31,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.m
  *
  */
 
-class MentorVuforiaNavigation {
+public class MentorVuforiaNavigation {
     private static final int NUM_TARGETS = 4; // Number of Vuforia targets
 
     private static final boolean DISPLAY_CAMERA = false; // If true, camera view will display on robot
@@ -43,7 +44,7 @@ class MentorVuforiaNavigation {
 
     // FTC Field width in millimeters
     // The FTC field is ~11'10" center-to-center of the glass panels
-    private static final double mmFTCFieldWidth  = (12*12 - 2) * DistanceUnit.mmPerInch;
+    private static final float mmFTCFieldWidth  = (12*12 - 2) * (float)DistanceUnit.mmPerInch;
 
     private static final double ON_AXIS = 10; // Within 1.0 cm on axis
     private static final double  OFFSET_ERROR   =  20;      // Within 2.0 cm of final target
@@ -82,7 +83,15 @@ class MentorVuforiaNavigation {
                                     // If relativeBearing is positive, robot must rotate counter-
                                     // clockwise to point at the target
 
-    MentorVuforiaNavigation() {
+    // Field Element Target Locations
+    OpenGLMatrix blueNearTargetLocation;
+    OpenGLMatrix blueFarTargetLocation;
+    OpenGLMatrix redNearTargetLocation;
+    OpenGLMatrix redFarTargetLocation;
+    OpenGLMatrix centerGoalTargetLocation;
+
+
+    public MentorVuforiaNavigation() {
         // Default constructor
         targetFound = false;
         targetName = null;
@@ -138,8 +147,58 @@ class MentorVuforiaNavigation {
         return relativeBearing;
     }
 
+    // Set target locations for various field elements
+    public void setFieldElementLocations() {
+        // TODO; NOT TESTED
+        String functionName = "setFieldElementLocations";
+
+        // TODO: Update values to actual positions for all elements below!!!
+        // TODO:
+        // TODO:
+        blueNearTargetLocation = OpenGLMatrix
+                /* Then we translate the target off to the RED WALL. Our translation here
+                is a negative translation in X.*/
+                .translation(-mmFTCFieldWidth/2, 0, 0)
+                .multiplied(Orientation.getRotationMatrix(
+                        /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
+                        AxesReference.EXTRINSIC, AxesOrder.XZX,
+                        AngleUnit.DEGREES, 90, 90, 0));
+        blueFarTargetLocation = OpenGLMatrix
+                /* Then we translate the target off to the RED WALL. Our translation here
+                is a negative translation in X.*/
+                .translation(-mmFTCFieldWidth/2, 0, 0)
+                .multiplied(Orientation.getRotationMatrix(
+                        /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
+                        AxesReference.EXTRINSIC, AxesOrder.XZX,
+                        AngleUnit.DEGREES, 90, 90, 0));
+        redNearTargetLocation = OpenGLMatrix
+                /* Then we translate the target off to the RED WALL. Our translation here
+                is a negative translation in X.*/
+                .translation(-mmFTCFieldWidth/2, 0, 0)
+                .multiplied(Orientation.getRotationMatrix(
+                        /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
+                        AxesReference.EXTRINSIC, AxesOrder.XZX,
+                        AngleUnit.DEGREES, 90, 90, 0));
+        redFarTargetLocation = OpenGLMatrix
+                /* Then we translate the target off to the RED WALL. Our translation here
+                is a negative translation in X.*/
+                .translation(-mmFTCFieldWidth/2, 0, 0)
+                .multiplied(Orientation.getRotationMatrix(
+                        /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
+                        AxesReference.EXTRINSIC, AxesOrder.XZX,
+                        AngleUnit.DEGREES, 90, 90, 0));
+        centerGoalTargetLocation = OpenGLMatrix
+                /* Then we translate the target off to the RED WALL. Our translation here
+                is a negative translation in X.*/
+                .translation(-mmFTCFieldWidth/2, 0, 0)
+                .multiplied(Orientation.getRotationMatrix(
+                        /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
+                        AxesReference.EXTRINSIC, AxesOrder.XZX,
+                        AngleUnit.DEGREES, 0, 0, 0));
+    }
+
     // Initialize Vuforia
-    void initialize(LinearOpMode om) {
+    public void initialize(LinearOpMode om) {
         String functionName = "initialize";
         VuforiaLocalizer.Parameters parameters;
 
@@ -228,7 +287,7 @@ class MentorVuforiaNavigation {
 
     }
 
-    void addNavTelemetry() {
+    public void addNavTelemetry() {
         if (targetFound)
         {
             // Display the current visible target name, robot info, target info, and required robot action.
@@ -248,7 +307,7 @@ class MentorVuforiaNavigation {
     }
 
     // Start target tracking
-    void startTargetTracking() {
+    public void startTargetTracking() {
         String functionName = "startTargetTracking";
 
         if (targets != null) {
@@ -257,7 +316,7 @@ class MentorVuforiaNavigation {
     }
 
     // Stop target tracking
-    void stopTargetTracking() {
+    public void stopTargetTracking() {
         String functionName = "stopTargetTracking";
 
         if (targets != null) {
@@ -266,7 +325,7 @@ class MentorVuforiaNavigation {
     }
 
     // Move to target
-    boolean moveToTarget(double standOffDistance) {
+    public boolean moveToTarget(double standOffDistance) {
         String functionName = "moveToTarget";
 
         // TODO: Implement this
@@ -295,7 +354,7 @@ class MentorVuforiaNavigation {
     }
 
     // Are any targets visible?
-    boolean anyTargetsVisible() {
+    public boolean anyTargetsVisible() {
         String functionName = "anyTargetsVisible";
 
         int targetNum = 0;

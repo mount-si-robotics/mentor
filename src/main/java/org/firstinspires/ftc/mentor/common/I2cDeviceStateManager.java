@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.mentor;
+package org.firstinspires.ftc.mentor.common;
 
 import com.qualcomm.robotcore.hardware.I2cController;
 import com.qualcomm.robotcore.hardware.I2cControllerPortDevice;

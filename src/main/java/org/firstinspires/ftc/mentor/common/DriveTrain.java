@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.mentor;
+package org.firstinspires.ftc.mentor.common;
 
 /**
  * Created by markdolecki on 1/9/17.
  */ // TODO: Implement generic drive routine that calls the appropriate drive function
-enum DriveTrain {
+public enum DriveTrain {
     TWO_WHEEL_REAR,
     TWO_WHEEL_CENTER,
     TWO_WHEEL_FRONT,

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.mentor;
+package org.firstinspires.ftc.mentor.common;
 
 import com.google.gson.Gson;
 

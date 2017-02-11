@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.mentor;
+package org.firstinspires.ftc.mentor.common;
 
 /**
  * Created by markdolecki on 12/19/16.
@@ -10,7 +10,7 @@ public class MotorMetadata {
     String name = null;
     MotorType type = null;
     double voltage = 0;
-    double encoderCountPerRevolution = 0;
+    public double encoderCountPerRevolution = 0;
     String gearboxReduction = null;
     double maxRPM = 0;
     String gearboxOutputPower = null;
@@ -20,7 +20,7 @@ public class MotorMetadata {
     String minBackdriveTorque = null;
 
     // List of FTC Legal Motor Types
-    enum MotorType {
+    public enum MotorType {
         ANDYMARK_NEVEREST_20,
         ANDYMARK_NEVEREST_40,
         ANDYMARK_NEVEREST_60,
