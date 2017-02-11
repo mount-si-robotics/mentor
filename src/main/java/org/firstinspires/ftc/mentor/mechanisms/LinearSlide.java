@@ -1,12 +1,14 @@
-package org.firstinspires.ftc.mentor;
+package org.firstinspires.ftc.mentor.mechanisms;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.mentor.common.MotorMetadata;
+
 import java.util.Map;
 
-class LinearSlide {
+public class LinearSlide {
 
     private LinearOpMode opMode = null;
     private DcMotor slideMotor = null; // One motor with encoder
@@ -20,7 +22,7 @@ class LinearSlide {
     private double currentSlidePosition = 0; // Inches
 
 
-    enum SlideState {
+    public enum SlideState {
         RETRACTED,
         EXTENDING,
         EXTENDED,
@@ -72,7 +74,7 @@ class LinearSlide {
      * Functions
      */
 
-    SlideState getSlideState() {
+    public SlideState getSlideState() {
         String functionName = "getSlideState";
 
         if (DEBUG) {
@@ -81,7 +83,7 @@ class LinearSlide {
         return slideState;
     }
 
-    void setSlideState(SlideState state) {
+    public void setSlideState(SlideState state) {
         String functionName = "setSlideState";
 
         if (DEBUG) {
@@ -91,7 +93,7 @@ class LinearSlide {
         this.slideState = state;
     }
 
-    double getSpeed() {
+    public double getSpeed() {
         String functionName = "getSpeed";
 
         if (DEBUG) {
@@ -101,7 +103,7 @@ class LinearSlide {
         return speed;
     }
 
-    void setSpeed(double speed) {
+    public void setSpeed(double speed) {
         String functionName = "setSpeed";
 
         if (DEBUG) {
@@ -111,7 +113,7 @@ class LinearSlide {
         this.speed = speed;
     }
 
-    double getSlideCircumference() {
+    public double getSlideCircumference() {
         String functionName = "getSlideCircumference";
 
         if (DEBUG) {
@@ -121,7 +123,7 @@ class LinearSlide {
         return slideCircumference;
     }
 
-    void setSlideCircumference(double circumference) {
+    public void setSlideCircumference(double circumference) {
         String functionName = "setSlideCircumference";
 
         if (DEBUG) {
@@ -131,7 +133,7 @@ class LinearSlide {
         this.slideCircumference = circumference;
     }
 
-    double getExtendDistance() {
+    public double getExtendDistance() {
         String functionName = "getExtendDistance";
 
         if (DEBUG) {
@@ -141,7 +143,7 @@ class LinearSlide {
         return extendDistance;
     }
 
-    void setExtendDistance(double extendDistance) {
+    public void setExtendDistance(double extendDistance) {
         String functionName = "setExtendDistance";
 
         if (DEBUG) {
@@ -153,7 +155,7 @@ class LinearSlide {
 
     // Try to figure out what state the slide is in.
     // Return the state AND set the internal state to the value discovered.
-    SlideState determineSlideState() {
+    public SlideState determineSlideState() {
         String functionName = "determineSlideState";
         SlideState state = SlideState.UNKNOWN;
 
@@ -188,7 +190,7 @@ class LinearSlide {
         return slideState;
     }
 
-    double getSlideGearReduction() {
+    public double getSlideGearReduction() {
         String functionName = "getSlideGearReduction";
 
         if (DEBUG) {
@@ -198,7 +200,7 @@ class LinearSlide {
         return slideGearReduction;
     }
 
-    void setSlideGearReduction(double slideGearReduction) {
+    public void setSlideGearReduction(double slideGearReduction) {
         String functionName = "setSlideGearReduction";
 
         if (DEBUG) {
@@ -208,16 +210,16 @@ class LinearSlide {
         this.slideGearReduction = slideGearReduction;
     }
 
-    double getCurrentSlidePosition() {
+    public double getCurrentSlidePosition() {
         return currentSlidePosition;
     }
 
-    void stopSlide() {
+    public void stopSlide() {
         slideMotor.setPower(0);
     }
 
 
-    void extendSlide() {
+    public void extendSlide() {
         String functionName = "extendSlide";
         int targetPosition;
 
@@ -266,7 +268,7 @@ class LinearSlide {
         currentSlidePosition = extendDistance;
     }
 
-    void retractSlide() {
+    public void retractSlide() {
         String functionName = "retractSlide";
         int targetPosition;
 
@@ -315,6 +317,20 @@ class LinearSlide {
     /*
      * Utilities
      */
+
+    private void opModeRequired() {
+        String functionName = "opModeRequired";
+        String msg = "A LinearOpMode is required";
+
+        if (DEBUG) {
+            DbgLog.msg(msg);
+        }
+        try {
+            throw new Exception(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private void unsupported(String msg) {
         String functionName = "unsupported";

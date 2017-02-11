@@ -1,8 +1,10 @@
-package org.firstinspires.ftc.mentor;
+package org.firstinspires.ftc.mentor.mechanisms;
 
 import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.mentor.common.MotorMetadata;
 
 import java.util.Map;
 
@@ -14,7 +16,7 @@ import java.util.Map;
  * 1. Lift has two motors of the same motor type.
  * 2. Both motors have encoders.
  */
-class LiftMechanism {
+public class LiftMechanism {
 
     private boolean DEBUG = false;
     private LinearOpMode opMode;
@@ -30,7 +32,7 @@ class LiftMechanism {
     private double currHeight = 0;
     private boolean liftStuck = false;
 
-    enum LiftState {
+    public enum LiftState {
         RETRACTED,
         RAISING,
         RAISED,
@@ -90,7 +92,7 @@ class LiftMechanism {
 //        this.motor2 = motor2;
 //    }
 
-    LiftState getLiftState() {
+    public LiftState getLiftState() {
         String functionName = "getLiftState";
 
         if (DEBUG) {
@@ -99,7 +101,7 @@ class LiftMechanism {
         return this.liftState;
     }
 
-    LiftState detectLiftState() {
+    public LiftState detectLiftState() {
         String functionName = "detectLiftState";
 
         if (DEBUG) {
@@ -142,18 +144,18 @@ class LiftMechanism {
     }
 
     // Set Lift motor power
-    void setLiftSpeed(double speed) {
+    public void setLiftSpeed(double speed) {
         motor1.setPower(speed);
         motor2.setPower(speed);
     }
 
-    void stopLift() {
+    public void stopLift() {
         motor1.setPower(0.0);
         motor2.setPower(0.0);
     }
 
     // Raise lift to a specific height
-    void raiseLift(double height) {
+    public void raiseLift(double height) {
         String functionName = "raiseLift";
         int targetPosition; // In Encoder Ticks
         int targetPosition2; // In Encoder Ticks
@@ -210,7 +212,7 @@ class LiftMechanism {
     }
 
     // Raise lift to the default configured height
-    void raiseLift() {
+    public void raiseLift() {
         String functionName = "raiseLift";
 
         if (DEBUG) {
@@ -221,7 +223,7 @@ class LiftMechanism {
     }
 
     // Retract the lift to starting position
-    void retractLift() {
+    public void retractLift() {
         String functionName = "retractLift";
         int targetPosition; // In Encoder Ticks
         int targetPosition2; // In Encoder Ticks
