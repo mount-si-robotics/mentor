@@ -29,7 +29,6 @@ public class DataLogger {
     private static DataLogger instance;
     private static FileOutputStream fileOutputStream;
     private static LinearOpMode linearOpMode;
-    private Context context;
     private static PrintWriter printWriter;
     private static Locale locale = Locale.US;
     private static boolean DEBUG = false;
@@ -54,30 +53,17 @@ public class DataLogger {
 
     public void initialize(LinearOpMode opMode) {
         linearOpMode = opMode;
-        context = opMode.hardwareMap.appContext;
         String functionName = "initialize";
 
         if (DEBUG) {
             DbgLog.msg("%s", functionName);
         }
 
-//        if (DEBUG) {
-//            DbgLog.msg("File directory = %s", context.getFilesDir());
-//        }
-//        context.getExternalFilesDir(DIRECTORY_DOCUMENTS);
         File path = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS);
 
         path.mkdirs();
 
         File file = new File(path, filename);
-
-//        try {
-//            fileOutputStream = context. .openFileOutput(filename, Context.MODE_APPEND);
-//        }
-//        catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        printWriter = new PrintWriter(fileOutputStream);
 
         try {
             fileOutputStream = new FileOutputStream(file);
