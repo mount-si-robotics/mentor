@@ -2,21 +2,31 @@ package org.firstinspires.ftc.mentor;
 
 import android.media.MediaPlayer;
 
+import com.qualcomm.ftccommon.DbgLog;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.mentor.common.Alliance;
+import org.firstinspires.ftc.mentor.common.ControllerMode;
+import org.firstinspires.ftc.mentor.common.DriveTrain;
+import org.firstinspires.ftc.mentor.common.LoggingMode;
+import org.firstinspires.ftc.mentor.common.MentorHardwareRobotConfiguration;
+import org.firstinspires.ftc.mentor.common.MotorMetadata;
+import org.firstinspires.ftc.mentor.common.MotorMetadataMap;
+import org.firstinspires.ftc.mentor.common.RobotConfigurationException;
+import org.firstinspires.ftc.mentor.common.ScaleMode;
+import org.firstinspires.ftc.mentor.common.StartPosition;
+import org.firstinspires.ftc.mentor.common.Strategy;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
@@ -79,7 +89,7 @@ import java.util.Map;
  *
  */
 
-class HardwareMentor
+public class HardwareMentor
 {
     // Class name for logging purposes
     private String className = "HardwareMentor";
@@ -227,6 +237,11 @@ class HardwareMentor
     // Get a handle to the OpMode that is using this class
     private void setLinearOpMode(LinearOpMode opMode) {
         String functionName = "setLinearOpMode";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         LINEAR_OPMODE = opMode;
     }
 
@@ -234,12 +249,20 @@ class HardwareMentor
     LoggingMode getLoggingMode() {
         String functionName = "getLoggingMode";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return LOGGING_MODE;
     }
 
     void setLoggingMode(LoggingMode loggingMode) {
         // TODO: NOT TESTED YET
         String functionName = "setLoggingMode";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         if (loggingMode != LOGGING_MODE) {
             // TODO: Handle state change
@@ -258,6 +281,10 @@ class HardwareMentor
     void setGamepadDeadzone(float deadzone) {
         String functionName = "setGamepadDeadzone";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         if (LINEAR_OPMODE != null) {
             LINEAR_OPMODE.gamepad1.setJoystickDeadzone(deadzone);
             LINEAR_OPMODE.gamepad2.setJoystickDeadzone(deadzone);
@@ -274,17 +301,29 @@ class HardwareMentor
     public void setGamepadDeadzone() {
         String functionName = "setGamepadDeadzone";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         setGamepadDeadzone(DEFAULT_DEADZONE);
     }
 
     ControllerMode getControllerMode() {
         String functionName = "getControllerMode";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return CONTROLLER_MODE;
     }
 
     void setControllerMode(ControllerMode controllerMode) {
         String functionName = "setControllerMode";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         CONTROLLER_MODE = controllerMode;
     }
@@ -293,6 +332,10 @@ class HardwareMentor
     ScaleMode getScaleMode() {
         String functionName = "getScaleMode";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return SCALE_MODE;
 
     }
@@ -300,25 +343,36 @@ class HardwareMentor
     // Set a global scaling mode
     void setScaleMode(ScaleMode sm) {
         String functionName = "setScaleMode";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         SCALE_MODE = sm;
     }
 
     // Scale a double value based on the default scaling mode
     public double scaleValue(double value) {
         String functionName = "scaleValue";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return scaleValue(value, SCALE_MODE);
     }
 
     // Scale a value based upon an exponent
     double scaleValue(double value, ScaleMode sm) {
         String functionName = "scaleValue";
-        int sign = 1;
+        int sign;
         double exponent = 1;
 
-        if (value < 0) {
-            sign = -1;
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
         }
-        value = abs(value);
+
+        sign = (value < 0) ? -1 : 1;
 
         if (sm == ScaleMode.LINEAR) {
             return value;
@@ -344,6 +398,10 @@ class HardwareMentor
 
         String functionName = "getMotorPositionInDegrees";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         if (motor != null) {
             return (motor.getCurrentPosition() * motorData.get(motor).encoderCountPerRevolution * DRIVE_GEAR_REDUCTION) % 360.0;
         }
@@ -355,12 +413,20 @@ class HardwareMentor
     DriveTrain getDriveTrain() {
         String functionName = "getDriveTrain";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return DRIVE_TRAIN;
     }
 
     // Set the drive train
     void setDriveTrain(DriveTrain dt) {
         String functionName = "setDriveTrain";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         DRIVE_TRAIN = dt;
     }
@@ -369,6 +435,10 @@ class HardwareMentor
         // TODO: NOT TESTED
 
         String functionName = "getConfigurationPotRawValue";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         if (configurationPot != null) {
             return configurationPot.getVoltage();
@@ -381,6 +451,10 @@ class HardwareMentor
 
         String functionName = "getConfigurationPotCurrentDivision";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         if (configurationPot != null) {
             return (int) ((configurationPot.getVoltage() / configurationPot.getMaxVoltage()) * POT_DIVISIONS);
         }
@@ -392,6 +466,10 @@ class HardwareMentor
 
         String functionName = "getConfigurationPotBits";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         int currDiv = getConfigurationPotCurrentDivision();
         for (int i = 0; i < potBitValues.length; i++) {
             potBitValues[i] = (currDiv & (1 << i)) != 0;
@@ -402,12 +480,20 @@ class HardwareMentor
     boolean getDebugMode() {
         String functionName = "getDebugMode";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return DEBUG_MODE;
     }
 
     // Turn on debug mode for more verbose logging
     void setDebugMode(boolean debugging) {
         String functionName = "setDebugMode";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         DEBUG_MODE = debugging;
     }
@@ -418,6 +504,11 @@ class HardwareMentor
         // TODO: NOT TESTED
 
         String functionName = "colorMatchesAlliance";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         int blueval;
         int redval;
 
@@ -442,6 +533,11 @@ class HardwareMentor
     boolean colorMatchesAlliance() {
         // TODO: NOT TESTED
         String functionName = "colorMatchesAlliance";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         int blueval;
         int redval;
 
@@ -480,6 +576,10 @@ class HardwareMentor
     private void setCdimLEDs(boolean blue, boolean red) {
         String functionName = "setCdimLEDs";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         if (cdim != null) {
             cdim.setLED(BLUE_LED, blue);
             cdim.setLED(RED_LED, red);
@@ -489,6 +589,10 @@ class HardwareMentor
     // Read alliance digital switch and set alliance
     private void setAllianceFromSwitch() {
         String functionName = "setAllianceFromSwitch";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         // By default, set alliance to BLUE
         alliance = Alliance.BLUE;
@@ -507,6 +611,10 @@ class HardwareMentor
     public void setCdimLedsForAlliance() {
         String functionName = "setCdimLedsForAlliance";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         if (cdim != null) {
             if (alliance == Alliance.BLUE) {
                 setCdimLEDs(true, false);
@@ -521,12 +629,20 @@ class HardwareMentor
     public Alliance getAlliance() {
         String functionName = "getAlliance";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return alliance;
     }
 
     // Set alliance
     void setAlliance(Alliance a) {
         String functionName = "setAlliance";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         alliance = a;
     }
@@ -535,12 +651,20 @@ class HardwareMentor
     public StartPosition getStartPosition() {
         String functionName = "getStartPosition";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return startPosition;
     }
 
     // Set start position
     void setStartPosition(StartPosition s) {
         String functionName = "setStartPosition";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         startPosition = s;
     }
@@ -549,12 +673,20 @@ class HardwareMentor
     public Strategy getStrategy() {
         String functionName = "getStrategy";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return strategy;
     }
 
     // Set strategy
     void setStrategy(Strategy s) {
         String functionName = "setStrategy";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         strategy = s;
     }
@@ -563,6 +695,10 @@ class HardwareMentor
     public Temperature getTemperatureFromIMU() {
         // TODO: NOT TESTED
         String functionName = "getTemperatureFromIMU";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         if (imu != null) {
             return imu.getTemperature();
@@ -576,6 +712,10 @@ class HardwareMentor
         // TODO: NOT TESTED
         String functionName = "zeroGyro";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         if (gyro != null) {
             gyro.resetZAxisIntegrator();
         }
@@ -585,6 +725,10 @@ class HardwareMentor
     public boolean isIRBeamBroken() {
         // TODO: NOT TESTED
         String functionName = "isIRBeamBroken";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         if (irBeamBreak != null) {
             return irBeamBreak.getState();
@@ -605,6 +749,10 @@ class HardwareMentor
         // TODO: NOT TESTED
         String functionName = "playSound";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         MediaPlayer mediaPlayer = MediaPlayer.create(hwMap.appContext, sound);
         mediaPlayer.start();
     }
@@ -612,12 +760,20 @@ class HardwareMentor
     public boolean isSlowDrive() {
         String functionName = "isSlowDrive";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return isSlowDrive;
     }
 
     public void setSlowDrive(boolean slow) {
         // TODO: NOT TESTED
         String functionName = "setSlowDrive";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         if (slow) {
             isSlowDrive = true;
@@ -631,12 +787,20 @@ class HardwareMentor
         // TODO: NOT TESTED
         String functionName = "getSlowDriveDivisor";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         return slowDriveDivisor;
     }
 
     public void setBallLoaderBlockPosition() {
         // TODO: NOT TESTED
         String functionName = "setBallLoaderBlockPosition";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         // TODO: NOT IMPLEMENTED
         // Set Servo to position to block the ball
@@ -647,6 +811,10 @@ class HardwareMentor
         // TODO: NOT TESTED
         String functionName = "setBallLoaderOpenPosition";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         // TODO: NOT IMPLEMENTED YET
         // Set Servo to position to allow ball to move into launcher
     }
@@ -654,6 +822,10 @@ class HardwareMentor
     public void loadBall() {
         // TODO: NOT TESTED
         String functionName = "loadBall";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         // TODO: NOT IMPLEMENTED YET
 
@@ -677,6 +849,11 @@ class HardwareMentor
     // Drive routine that supports Mecanum wheels.  Will maintain a gyro heading.
     public void driveMecanumCartesian (double x, double y, double rotation, double gyroHeading, boolean inverted) {
         String functionName = "driveMecanumCartesian";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         double LFPower;
         double RFPower;
         double LBPower;
@@ -730,6 +907,10 @@ class HardwareMentor
     public void driveMecanumCartesian (double x, double y, double rotation, boolean inverted) {
         String functionName = "driveMecanumCartesian";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         driveMecanumCartesian (x, y, rotation, 0.0, inverted);
     }
 
@@ -737,12 +918,20 @@ class HardwareMentor
     public void driveMecanumCartesian (double x, double y, double rotation) {
         String functionName = "driveMecanumCartesian";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         driveMecanumCartesian (x, y, rotation, 0.0, false);
     }
 
     // Mecanum drive that support only x,y, no rotation, gyro heading or inversion
     public void driveMecanumCartesian (double x, double y) {
         String functionName = "driveMecanumCartesian";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         driveMecanumCartesian (x, y, 0.0, 0.0, false);
     }
@@ -753,6 +942,10 @@ class HardwareMentor
 
         String functionName = "driveRearTwoWheel";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         drive(0.0, 0.0, 0.0, 0.0, LBPower, RBPower);
     }
 
@@ -761,6 +954,10 @@ class HardwareMentor
         // TODO: NOT TESTED
 
         String functionName = "driveFrontTwoWheel";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         drive(LFPower, RFPower, 0.0, 0.0, 0.0, 0.0);
     }
@@ -778,6 +975,10 @@ class HardwareMentor
         // TODO: NOT TESTED
 
         String functionName = "drive";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         // Normalize the power of each motor so that the maximum motor power is MAX_MOTOR_SPEED
         double maxPower = Math.max(LFPower, Math.max(RFPower, Math.max(LMPower, Math.max(RMPower, Math.max(LBPower, RBPower)))));
@@ -817,6 +1018,10 @@ class HardwareMentor
         // TODO: NOT TESTED
         String functionName = "drive";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         // Use same speed for all potential left/right motors
         drive(leftPower, rightPower, leftPower, rightPower, leftPower, rightPower);
     }
@@ -824,6 +1029,10 @@ class HardwareMentor
     // Stop drive motors
     void stopDriveMotors() {
         String functionName = "stopDriveMotors";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         for (DcMotor motor : driveMotorMap.keySet()) {
             motor.setPower(0.0);
@@ -834,6 +1043,10 @@ class HardwareMentor
     public void stopDriveMotors(long delayMillis) {
         // TODO: NOT TESTED
         String functionName = "stopDriveMotors";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         stopDriveMotors();
 
@@ -848,6 +1061,10 @@ class HardwareMentor
     void startBeaterMotor() {
         String functionName = "startBeaterMotor";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         if (BeaterMotor != null) {
             BeaterMotor.setPower(BEATER_MOTOR_SPEED);
 
@@ -857,6 +1074,11 @@ class HardwareMentor
 
     void reverseBeaterMotor() {
         String functionName = "reverseBeaterMotor";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         double power;
 
         if (BeaterMotor != null) {
@@ -873,6 +1095,10 @@ class HardwareMentor
     void stopBeaterMotor() {
         String functionName = "stopBeaterMotor";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         if (BeaterMotor != null) {
             BeaterMotor.setPower(0.0);
         }
@@ -882,6 +1108,10 @@ class HardwareMentor
     // Stop ChooChoo Motor
     void stopChooChooMotor() {
         String functionName = "stopChooChooMotor";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         if (ChooChooMotor != null) {
             ChooChooMotor.setPower(0.0);
@@ -900,6 +1130,10 @@ class HardwareMentor
         // TODO: NOT TESTED
         String functionName = "setDriveMotorMode";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         for (DcMotor motor : driveMotorMap.keySet()) {
             motor.setMode(runMode);
         }
@@ -909,6 +1143,10 @@ class HardwareMentor
     DcMotor.RunMode getDriveMotorMode() {
         // TODO: NOT TESTED
         String functionName = "getDriveMotorMode";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         for (DcMotor motor : driveMotorMap.keySet()) {
             return motor.getMode();
@@ -928,6 +1166,10 @@ class HardwareMentor
     private void setDriveMotorZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         String functionName = "setDriveMotorZeroPowerBehavior";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         for (DcMotor motor : driveMotorMap.keySet()) {
             motor.setZeroPowerBehavior(zeroPowerBehavior);
         }
@@ -936,6 +1178,11 @@ class HardwareMentor
     // Check to see if drive motors are busy
     private boolean driveMotorsBusy() {
         String functionName = "driveMotorsBusy";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         boolean returnVal = false;
 
         for (DcMotor motor : driveMotorMap.keySet()) {
@@ -950,6 +1197,11 @@ class HardwareMentor
     // Use encoders to drive a specific distance
     void driveDistanceInInches(double left_distance, double right_distance, double speed) {
         String functionName = "driveDistanceInInches";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         int newLeftTarget;
         int newRightTarget;
 
@@ -1015,6 +1267,10 @@ class HardwareMentor
     void driveDistanceInInches(double left_distance, double right_distance) {
         String functionName = "driveDistanceInInches";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         driveDistanceInInches(left_distance, right_distance, DEFAULT_DRIVE_SPEED);
 
     }
@@ -1023,12 +1279,20 @@ class HardwareMentor
     void driveDistanceInMM(double left_distance, double right_distance, double speed) {
         String functionName = "driveDistanceInMM";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         driveDistanceInInches(left_distance * MM_TO_INCHES, right_distance * MM_TO_INCHES, speed * MM_TO_INCHES);
     }
 
     // Use encoders to drive a specific distance using default speed
     void driveDistanceInMM(double left_distance, double right_distance) {
         String functionName = "driveDistanceInMM";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         driveDistanceInMM(left_distance, right_distance, DEFAULT_DRIVE_SPEED);
     }
@@ -1037,6 +1301,11 @@ class HardwareMentor
     void driveUntilLineDetected() {
         // TODO: NOT TESTED
         String functionName = "driveUntilLineDetected";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         double lightThreshold = 0.2;
         double timeout = 5.0;
         double startTime = runtime.seconds();
@@ -1053,6 +1322,11 @@ class HardwareMentor
     void driveFollowLineUntilDistance(double distance) {
         // TODO: NOT TESTED
         String functionName = "driveFollowLineUntilDistance";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         double lightThreshold = 0.2;
 
         // TODO: IMPLEMENT THIS
@@ -1068,6 +1342,10 @@ class HardwareMentor
     void pushBeaconUntilMatchesAlliance() {
         // TODO: NOT TESTED
         String functionName = "pushBeaconUntilMatchesAlliance";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         // TODO: Implement this
 
@@ -1098,6 +1376,11 @@ class HardwareMentor
     private void turnByDegreesGyro(double degrees, double speed) {
         // TODO: NOT TESTED
         String functionName = "turnByDegreesGyro";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         double gain = 0.7; // Tune this value as needed +/- for accurate turns
         double currentHeading;
         double timeout = 10.0;  // TODO: what is appropriate timeout value for a turn?
@@ -1142,6 +1425,11 @@ class HardwareMentor
     private void turnByDegreesIMU(double degrees, double speed) {
         // TODO: NOT TESTED
         String functionName = "turnByDegreesIMU";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         double gain = 0.7; // Tune this value as needed +/- for accurate turns
         double currentHeading;
         double timeout = 7.0;  // TODO: what is appropriate timeout value for a turn?
@@ -1194,6 +1482,10 @@ class HardwareMentor
     void turnByDegrees(double degrees, double speed) {
         String functionName = "turnByDegrees";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         // If there is a Modern Robotics Gyro, use that first.
         // If no MR Gyro, try to use an Adafruit IMU.
         if (gyro != null) {
@@ -1215,6 +1507,10 @@ class HardwareMentor
     // Turn robot a specific number of degrees (positive or negative) at the default speed
     void turnByDegrees(double degrees) {
         String functionName = "turnByDegrees";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         turnByDegrees(degrees, DEFAULT_TURN_SPEED);
     }
@@ -1239,6 +1535,11 @@ class HardwareMentor
     void fireAndArmChooChooLauncher() {
         // TODO: NOT TESTED
         String functionName = "fireAndArmChooChooLauncher";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         int newTarget;
 
         if (LINEAR_OPMODE == null) {
@@ -1282,6 +1583,10 @@ class HardwareMentor
     // Initialize motors
     private void initializeMotors() throws RobotConfigurationException {
         String functionName = "initializeMotors";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         // Initialize the motor metadata map
         // TODO: is there a better place to put this initialization?
@@ -1408,6 +1713,10 @@ class HardwareMentor
     private void initializeServos() throws RobotConfigurationException {
         String functionName = "initializeServos";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         // Add servo initialization here
 
         if (hwMap == null) {
@@ -1418,6 +1727,10 @@ class HardwareMentor
     // Initialize sensors
     private void initializeSensors() throws RobotConfigurationException {
         String functionName = "initializeSensors";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         if (hwMap == null) {
             throw new RobotConfigurationException(functionName + ": HardwareMap is null");
@@ -1570,6 +1883,10 @@ class HardwareMentor
         // TODO: NOT TESTED
         String functionName = "getRobotConfigurationDataFromFile";
 
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         // TODO: Implement this
         try {
             //File file = hwMap.appContext // AppUtil.getInstance().getSettingsFile();
@@ -1587,6 +1904,12 @@ class HardwareMentor
     // Initialize Hardware interfaces
     // Use this version with non-LinearOpModes
     public void init(HardwareMap ahwMap) {
+        String functionName = "init";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
+
         setLoggingMode(LoggingMode.NONE);
 
         // Save reference to Hardware map
@@ -1625,6 +1948,10 @@ class HardwareMentor
     // Initialize Hardware interfaces
     public void init(HardwareMap ahwMap, LinearOpMode om) {
         String functionName = "init";
+
+        if (DEBUG_MODE) {
+            DbgLog.msg("%s", functionName);
+        }
 
         setLinearOpMode(om);
         init(ahwMap);
