@@ -35,6 +35,8 @@ package org.firstinspires.ftc.mentor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.mentor.common.ControllerMode;
+
 import static java.lang.Math.abs;
 
 /**
