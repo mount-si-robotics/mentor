@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.mentor.mechanisms;
 
 import com.google.gson.internal.LazilyParsedNumber;
-import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -63,7 +63,7 @@ public class BallLauncher {
         String functionName = "getLauncherState";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
         return this.launcherState;
     }
@@ -72,7 +72,7 @@ public class BallLauncher {
         String functionName = "detectLauncherState";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // TODO: Detect the state of the lift if possible
@@ -110,7 +110,7 @@ public class BallLauncher {
         String functionName = "getLauncherGearReduction";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return LAUNCHER_GEAR_REDUCTION;
@@ -120,7 +120,7 @@ public class BallLauncher {
         String functionName = "setLauncherGearReduction";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         LAUNCHER_GEAR_REDUCTION = gearReduction;
@@ -130,7 +130,7 @@ public class BallLauncher {
         String functionName = "getLauncherSpeed";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return DEFAULT_LAUNCHER_SPEED;
@@ -140,7 +140,7 @@ public class BallLauncher {
         String functionName = "setLauncherSpeed";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         DEFAULT_LAUNCHER_SPEED = launcherSpeed;
@@ -150,7 +150,7 @@ public class BallLauncher {
         String functionName = "getLauncherWheelDiameter";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return LAUNCHER_WHEEL_DIAMETER;
@@ -160,7 +160,7 @@ public class BallLauncher {
         String functionName = "setLauncherWheelDiameter";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         LAUNCHER_WHEEL_DIAMETER = launcherWheelDiameter;
@@ -170,7 +170,7 @@ public class BallLauncher {
         String functionName = "getMagazineSize";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return magazineSize;
@@ -180,7 +180,7 @@ public class BallLauncher {
         String functionName = "setMagazineSize";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         this.magazineSize = magazineSize;
@@ -190,7 +190,7 @@ public class BallLauncher {
         String functionName = "getNumBallsLoaded";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return numBallsLoaded;
@@ -200,7 +200,7 @@ public class BallLauncher {
         String functionName = "setNumBallsLoaded";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         numBallsLoaded = numBalls;
@@ -210,7 +210,7 @@ public class BallLauncher {
         String functionName = "loadBall";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         numBallsLoaded++;
@@ -221,7 +221,7 @@ public class BallLauncher {
         String functionName = "armLauncher";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         launcherState = LauncherState.ARMING;
@@ -237,7 +237,7 @@ public class BallLauncher {
         String functionName = "fireLauncher";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         launcherState = LauncherState.LAUNCHING;
@@ -258,7 +258,7 @@ public class BallLauncher {
         String msg = "A LinearOpMode is required";
 
         if (DEBUG) {
-            DbgLog.msg(msg);
+            RobotLog.d(msg);
         }
         try {
             throw new Exception(msg);
@@ -271,7 +271,7 @@ public class BallLauncher {
         String functionName = "unsupported";
 
         if (DEBUG) {
-            DbgLog.msg("%s not supported", functionName);
+            RobotLog.d("%s not supported", functionName);
         }
         try {
             throw new Exception(msg);

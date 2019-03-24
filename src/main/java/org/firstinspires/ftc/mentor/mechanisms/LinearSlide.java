@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.mentor.mechanisms;
 
-import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -78,7 +78,7 @@ public class LinearSlide {
         String functionName = "getSlideState";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
         return slideState;
     }
@@ -87,7 +87,7 @@ public class LinearSlide {
         String functionName = "setSlideState";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         this.slideState = state;
@@ -97,7 +97,7 @@ public class LinearSlide {
         String functionName = "getSpeed";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return speed;
@@ -107,7 +107,7 @@ public class LinearSlide {
         String functionName = "setSpeed";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         this.speed = speed;
@@ -117,7 +117,7 @@ public class LinearSlide {
         String functionName = "getSlideCircumference";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return slideCircumference;
@@ -127,7 +127,7 @@ public class LinearSlide {
         String functionName = "setSlideCircumference";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         this.slideCircumference = circumference;
@@ -137,7 +137,7 @@ public class LinearSlide {
         String functionName = "getExtendDistance";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return extendDistance;
@@ -147,7 +147,7 @@ public class LinearSlide {
         String functionName = "setExtendDistance";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         this.extendDistance = extendDistance;
@@ -160,7 +160,7 @@ public class LinearSlide {
         SlideState state = SlideState.UNKNOWN;
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         unsupported("determineState not implemented yet.");
@@ -194,7 +194,7 @@ public class LinearSlide {
         String functionName = "getSlideGearReduction";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return slideGearReduction;
@@ -204,7 +204,7 @@ public class LinearSlide {
         String functionName = "setSlideGearReduction";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         this.slideGearReduction = slideGearReduction;
@@ -224,11 +224,11 @@ public class LinearSlide {
         int targetPosition;
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (slideState != SlideState.RETRACTED || slideState == SlideState.UNKNOWN) {
-            DbgLog.msg("LinearSlide is in wrong state");
+            RobotLog.d("LinearSlide is in wrong state");
 
             return;
         }
@@ -273,11 +273,11 @@ public class LinearSlide {
         int targetPosition;
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (slideState != SlideState.EXTENDED || slideState == SlideState.UNKNOWN) {
-            DbgLog.msg("LinearSlide is in wrong state");
+            RobotLog.d("LinearSlide is in wrong state");
             return;
         }
 
@@ -323,7 +323,7 @@ public class LinearSlide {
         String msg = "A LinearOpMode is required";
 
         if (DEBUG) {
-            DbgLog.msg(msg);
+            RobotLog.d(msg);
         }
         try {
             throw new Exception(msg);
@@ -336,7 +336,7 @@ public class LinearSlide {
         String functionName = "unsupported";
 
         if (DEBUG) {
-            DbgLog.msg("%s not supported", functionName);
+            RobotLog.d("%s not supported", functionName);
         }
         try {
             throw new Exception(msg);

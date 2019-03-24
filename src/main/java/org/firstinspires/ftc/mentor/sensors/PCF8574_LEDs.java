@@ -61,7 +61,7 @@ public class PCF8574_LEDs extends I2cDeviceSynchDevice<I2cDeviceSynch> {
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);
         this.deviceClient.engage();
 
-        super.registerArmingStateCallback();
+        super.registerArmingStateCallback(true);
     }
 
 

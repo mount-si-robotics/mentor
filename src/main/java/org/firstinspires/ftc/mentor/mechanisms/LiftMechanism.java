@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.mentor.mechanisms;
 
-import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -96,7 +96,7 @@ public class LiftMechanism {
         String functionName = "getLiftState";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
         return this.liftState;
     }
@@ -105,7 +105,7 @@ public class LiftMechanism {
         String functionName = "detectLiftState";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // TODO: Detect the state of the lift if possible
@@ -162,11 +162,11 @@ public class LiftMechanism {
 
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (liftState != LiftState.RETRACTED || liftState == LiftState.UNKNOWN) {
-            DbgLog.msg("LiftMechanism is in wrong state.");
+            RobotLog.d("LiftMechanism is in wrong state.");
             // Nothing to do
             return;
         }
@@ -216,7 +216,7 @@ public class LiftMechanism {
         String functionName = "raiseLift";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         raiseLift(TARGET_HEIGHT_IN);
@@ -229,11 +229,11 @@ public class LiftMechanism {
         int targetPosition2; // In Encoder Ticks
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (liftState != LiftState.RAISED || liftState != LiftState.UNKNOWN) {
-            DbgLog.msg("LiftMechanism is in wrong state.");
+            RobotLog.d("LiftMechanism is in wrong state.");
             // Nothing to do
             return;
         }
@@ -289,7 +289,7 @@ public class LiftMechanism {
         String msg = "A LinearOpMode is required";
 
         if (DEBUG) {
-            DbgLog.msg(msg);
+            RobotLog.d(msg);
         }
         try {
             throw new Exception(msg);
@@ -302,7 +302,7 @@ public class LiftMechanism {
         String functionName = "unsupported";
 
         if (DEBUG) {
-            DbgLog.msg("%s not supported", functionName);
+            RobotLog.d("%s not supported", functionName);
         }
         try {
             throw new Exception(msg);

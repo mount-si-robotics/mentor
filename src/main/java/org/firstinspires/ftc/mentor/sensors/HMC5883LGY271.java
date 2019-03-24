@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.mentor.sensors;
 
-import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.robotcore.hardware.I2cWaitControl;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
@@ -172,11 +173,11 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
 
         this.deviceClient.setI2cAddress(ADDRESS_I2C_DEFAULT);
 
-        DbgLog.msg("I2c address: %d", this.deviceClient.getI2cAddress().get8Bit());
+        RobotLog.d("I2c address: %d", this.deviceClient.getI2cAddress().get8Bit());
 
         this.deviceClient.engage();
 
-        super.registerArmingStateCallback();
+        super.registerArmingStateCallback(true);
 
     }
 
@@ -184,7 +185,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "setOptimalReadWindow";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
 //        I2cDeviceSynch.ReadWindow readWindow = new I2cDeviceSynch.ReadWindow(
@@ -204,7 +205,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "doInitialize";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // Enable the compass sensor
@@ -226,7 +227,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getDirection";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
         return atan2(getHeadingY(), getHeadingX());
 
@@ -242,7 +243,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "status";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return null;
@@ -258,7 +259,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "setMode";
 
         if (DEBUG) {
-            DbgLog.msg("%s(%s)", functionName, mode.toString());
+            RobotLog.d("%s(%s)", functionName, mode.toString());
         }
 
         // TODO: IMPLEMENT THIS
@@ -282,7 +283,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "calibrationFailed";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // TODO: IMPLEMENT THIS
@@ -307,9 +308,9 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         // Should see the characters 'H', '4' and '3' in the registers.
         if ((testChars[0] == 'H') && (testChars[1] == '4') && (testChars[2] == '3')) {
             test = true;
-            DbgLog.msg("testConnection: true");
+            RobotLog.d("testConnection: true");
         }
-        DbgLog.msg("%c%c%c",testChars[0], testChars[1], testChars[2]);
+        RobotLog.d("%c%c%c",testChars[0], testChars[1], testChars[2]);
 
         return test;
     }
@@ -324,7 +325,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getManufacturer";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return Manufacturer.Other;
@@ -340,7 +341,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getDeviceName";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return DEVICE_NAME;
@@ -357,11 +358,11 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
 
     public void write8(Register reg, byte value)
     {
-        this.write8(reg, value, false);
+        this.write8(reg, value, I2cWaitControl.ATOMIC);
     }
-    public void write8(Register reg, byte value, boolean waitForCompletion)
+    public void write8(Register reg, byte value, I2cWaitControl control)
     {
-        this.deviceClient.write8(reg.bVal, value, waitForCompletion);
+        this.deviceClient.write8(reg.bVal, value, control);
     }
 
     public int readShort(Register reg)
@@ -395,7 +396,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getSampleAveraging";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
         byte retVal = read8(Register.HMC5883L_RA_CONFIG_A);
 
@@ -410,7 +411,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "setSampleAveraging";
 
         if (DEBUG) {
-            DbgLog.msg("%s(%d)", functionName, averaging);
+            RobotLog.d("%s(%d)", functionName, averaging);
         }
 
 
@@ -420,7 +421,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getDataRate";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         byte retVal = read8(Register.HMC5883L_RA_CONFIG_A);
@@ -435,7 +436,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "setDataRate";
 
         if (DEBUG) {
-            DbgLog.msg("%s(%d)", functionName, rate);
+            RobotLog.d("%s(%d)", functionName, rate);
         }
 
     }
@@ -444,7 +445,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getMeasurementBias";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
         byte retVal = read8(Register.HMC5883L_RA_CONFIG_A);
 
@@ -457,7 +458,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "setMeasurementBias";
 
         if (DEBUG) {
-            DbgLog.msg("%s(%d)", functionName, bias);
+            RobotLog.d("%s(%d)", functionName, bias);
         }
 
 
@@ -485,7 +486,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getGain";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         byte retVal = read8(Register.HMC5883L_RA_CONFIG_B);
@@ -499,7 +500,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "setGain";
 
         if (DEBUG) {
-            DbgLog.msg("%s(%d)", functionName, gain);
+            RobotLog.d("%s(%d)", functionName, gain);
         }
 
 
@@ -513,7 +514,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getMode";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         byte retVal = read8(Register.HMC5883L_RA_STATUS);
@@ -527,7 +528,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "setMode";
 
         if (DEBUG) {
-            DbgLog.msg("%s(%d)", functionName, mode);
+            RobotLog.d("%s(%d)", functionName, mode);
         }
 
     }
@@ -540,7 +541,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         short[] returnVals = new short[3];
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
         byte[] values = this.deviceClient.read(Register.HMC5883L_RA_DATAX_H.bVal, 6);
 
@@ -560,7 +561,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         short[] returnVals = new short[3];
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         byte[] values = this.deviceClient.read(Register.HMC5883L_RA_DATAX_H.bVal, 6);
@@ -580,7 +581,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         short[] returnVals = new short[3];
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         byte[] values = this.deviceClient.read(Register.HMC5883L_RA_DATAX_H.bVal, 6);
@@ -600,7 +601,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         short[] returnVals = new short[3];
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         byte[] values = this.deviceClient.read(Register.HMC5883L_RA_DATAX_H.bVal, 6);
@@ -621,7 +622,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         boolean status = false;
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         byte response = read8(Register.HMC5883L_RA_STATUS);
@@ -637,7 +638,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         boolean status = false;
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         byte response = read8(Register.HMC5883L_RA_STATUS);
@@ -655,7 +656,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getIDA";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return read8(Register.HMC5883L_RA_ID_A);
@@ -665,7 +666,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getIDB";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return read8(Register.HMC5883L_RA_ID_B);
@@ -675,7 +676,7 @@ public class HMC5883LGY271 extends I2cDeviceSynchDevice<I2cDeviceSynch> implemen
         String functionName = "getIDC";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return read8(Register.HMC5883L_RA_ID_C);

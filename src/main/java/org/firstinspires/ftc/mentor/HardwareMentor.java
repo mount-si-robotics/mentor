@@ -2,8 +2,8 @@ package org.firstinspires.ftc.mentor;
 
 import android.media.MediaPlayer;
 
-import com.qualcomm.ftccommon.DbgLog;
-import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -239,7 +239,7 @@ public class HardwareMentor
         String functionName = "setLinearOpMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         LINEAR_OPMODE = opMode;
@@ -250,7 +250,7 @@ public class HardwareMentor
         String functionName = "getLoggingMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return LOGGING_MODE;
@@ -261,7 +261,7 @@ public class HardwareMentor
         String functionName = "setLoggingMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (loggingMode != LOGGING_MODE) {
@@ -282,7 +282,7 @@ public class HardwareMentor
         String functionName = "setGamepadDeadzone";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (LINEAR_OPMODE != null) {
@@ -302,7 +302,7 @@ public class HardwareMentor
         String functionName = "setGamepadDeadzone";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         setGamepadDeadzone(DEFAULT_DEADZONE);
@@ -312,7 +312,7 @@ public class HardwareMentor
         String functionName = "getControllerMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return CONTROLLER_MODE;
@@ -322,7 +322,7 @@ public class HardwareMentor
         String functionName = "setControllerMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         CONTROLLER_MODE = controllerMode;
@@ -333,7 +333,7 @@ public class HardwareMentor
         String functionName = "getScaleMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return SCALE_MODE;
@@ -345,7 +345,7 @@ public class HardwareMentor
         String functionName = "setScaleMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         SCALE_MODE = sm;
@@ -356,7 +356,7 @@ public class HardwareMentor
         String functionName = "scaleValue";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return scaleValue(value, SCALE_MODE);
@@ -369,7 +369,7 @@ public class HardwareMentor
         double exponent = 1;
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         sign = (value < 0) ? -1 : 1;
@@ -399,7 +399,7 @@ public class HardwareMentor
         String functionName = "getMotorPositionInDegrees";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (motor != null) {
@@ -414,7 +414,7 @@ public class HardwareMentor
         String functionName = "getDriveTrain";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return DRIVE_TRAIN;
@@ -425,7 +425,7 @@ public class HardwareMentor
         String functionName = "setDriveTrain";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         DRIVE_TRAIN = dt;
@@ -437,7 +437,7 @@ public class HardwareMentor
         String functionName = "getConfigurationPotRawValue";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (configurationPot != null) {
@@ -452,7 +452,7 @@ public class HardwareMentor
         String functionName = "getConfigurationPotCurrentDivision";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (configurationPot != null) {
@@ -467,7 +467,7 @@ public class HardwareMentor
         String functionName = "getConfigurationPotBits";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         int currDiv = getConfigurationPotCurrentDivision();
@@ -481,7 +481,7 @@ public class HardwareMentor
         String functionName = "getDebugMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return DEBUG_MODE;
@@ -492,7 +492,7 @@ public class HardwareMentor
         String functionName = "setDebugMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         DEBUG_MODE = debugging;
@@ -506,7 +506,7 @@ public class HardwareMentor
         String functionName = "colorMatchesAlliance";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         int blueval;
@@ -535,7 +535,7 @@ public class HardwareMentor
         String functionName = "colorMatchesAlliance";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         int blueval;
@@ -577,7 +577,7 @@ public class HardwareMentor
         String functionName = "setCdimLEDs";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (cdim != null) {
@@ -591,7 +591,7 @@ public class HardwareMentor
         String functionName = "setAllianceFromSwitch";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // By default, set alliance to BLUE
@@ -612,7 +612,7 @@ public class HardwareMentor
         String functionName = "setCdimLedsForAlliance";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (cdim != null) {
@@ -630,7 +630,7 @@ public class HardwareMentor
         String functionName = "getAlliance";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return alliance;
@@ -641,7 +641,7 @@ public class HardwareMentor
         String functionName = "setAlliance";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         alliance = a;
@@ -652,7 +652,7 @@ public class HardwareMentor
         String functionName = "getStartPosition";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return startPosition;
@@ -663,7 +663,7 @@ public class HardwareMentor
         String functionName = "setStartPosition";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         startPosition = s;
@@ -674,7 +674,7 @@ public class HardwareMentor
         String functionName = "getStrategy";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return strategy;
@@ -685,7 +685,7 @@ public class HardwareMentor
         String functionName = "setStrategy";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         strategy = s;
@@ -697,7 +697,7 @@ public class HardwareMentor
         String functionName = "getTemperatureFromIMU";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (imu != null) {
@@ -713,7 +713,7 @@ public class HardwareMentor
         String functionName = "zeroGyro";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (gyro != null) {
@@ -727,7 +727,7 @@ public class HardwareMentor
         String functionName = "isIRBeamBroken";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (irBeamBreak != null) {
@@ -750,7 +750,7 @@ public class HardwareMentor
         String functionName = "playSound";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         MediaPlayer mediaPlayer = MediaPlayer.create(hwMap.appContext, sound);
@@ -761,7 +761,7 @@ public class HardwareMentor
         String functionName = "isSlowDrive";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return isSlowDrive;
@@ -772,7 +772,7 @@ public class HardwareMentor
         String functionName = "setSlowDrive";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (slow) {
@@ -788,7 +788,7 @@ public class HardwareMentor
         String functionName = "getSlowDriveDivisor";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return slowDriveDivisor;
@@ -799,7 +799,7 @@ public class HardwareMentor
         String functionName = "setBallLoaderBlockPosition";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // TODO: NOT IMPLEMENTED
@@ -812,7 +812,7 @@ public class HardwareMentor
         String functionName = "setBallLoaderOpenPosition";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // TODO: NOT IMPLEMENTED YET
@@ -824,7 +824,7 @@ public class HardwareMentor
         String functionName = "loadBall";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // TODO: NOT IMPLEMENTED YET
@@ -851,7 +851,7 @@ public class HardwareMentor
         String functionName = "driveMecanumCartesian";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         double LFPower;
@@ -908,7 +908,7 @@ public class HardwareMentor
         String functionName = "driveMecanumCartesian";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         driveMecanumCartesian (x, y, rotation, 0.0, inverted);
@@ -919,7 +919,7 @@ public class HardwareMentor
         String functionName = "driveMecanumCartesian";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         driveMecanumCartesian (x, y, rotation, 0.0, false);
@@ -930,7 +930,7 @@ public class HardwareMentor
         String functionName = "driveMecanumCartesian";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         driveMecanumCartesian (x, y, 0.0, 0.0, false);
@@ -943,7 +943,7 @@ public class HardwareMentor
         String functionName = "driveRearTwoWheel";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         drive(0.0, 0.0, 0.0, 0.0, LBPower, RBPower);
@@ -956,7 +956,7 @@ public class HardwareMentor
         String functionName = "driveFrontTwoWheel";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         drive(LFPower, RFPower, 0.0, 0.0, 0.0, 0.0);
@@ -977,7 +977,7 @@ public class HardwareMentor
         String functionName = "drive";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // Normalize the power of each motor so that the maximum motor power is MAX_MOTOR_SPEED
@@ -1019,7 +1019,7 @@ public class HardwareMentor
         String functionName = "drive";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // Use same speed for all potential left/right motors
@@ -1031,7 +1031,7 @@ public class HardwareMentor
         String functionName = "stopDriveMotors";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         for (DcMotor motor : driveMotorMap.keySet()) {
@@ -1045,7 +1045,7 @@ public class HardwareMentor
         String functionName = "stopDriveMotors";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         stopDriveMotors();
@@ -1062,7 +1062,7 @@ public class HardwareMentor
         String functionName = "startBeaterMotor";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (BeaterMotor != null) {
@@ -1076,7 +1076,7 @@ public class HardwareMentor
         String functionName = "reverseBeaterMotor";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         double power;
@@ -1096,7 +1096,7 @@ public class HardwareMentor
         String functionName = "stopBeaterMotor";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (BeaterMotor != null) {
@@ -1110,7 +1110,7 @@ public class HardwareMentor
         String functionName = "stopChooChooMotor";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (ChooChooMotor != null) {
@@ -1131,7 +1131,7 @@ public class HardwareMentor
         String functionName = "setDriveMotorMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         for (DcMotor motor : driveMotorMap.keySet()) {
@@ -1145,7 +1145,7 @@ public class HardwareMentor
         String functionName = "getDriveMotorMode";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         for (DcMotor motor : driveMotorMap.keySet()) {
@@ -1167,7 +1167,7 @@ public class HardwareMentor
         String functionName = "setDriveMotorZeroPowerBehavior";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         for (DcMotor motor : driveMotorMap.keySet()) {
@@ -1180,7 +1180,7 @@ public class HardwareMentor
         String functionName = "driveMotorsBusy";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         boolean returnVal = false;
@@ -1199,7 +1199,7 @@ public class HardwareMentor
         String functionName = "driveDistanceInInches";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         int newLeftTarget;
@@ -1268,7 +1268,7 @@ public class HardwareMentor
         String functionName = "driveDistanceInInches";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         driveDistanceInInches(left_distance, right_distance, DEFAULT_DRIVE_SPEED);
@@ -1280,7 +1280,7 @@ public class HardwareMentor
         String functionName = "driveDistanceInMM";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         driveDistanceInInches(left_distance * MM_TO_INCHES, right_distance * MM_TO_INCHES, speed * MM_TO_INCHES);
@@ -1291,7 +1291,7 @@ public class HardwareMentor
         String functionName = "driveDistanceInMM";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         driveDistanceInMM(left_distance, right_distance, DEFAULT_DRIVE_SPEED);
@@ -1303,7 +1303,7 @@ public class HardwareMentor
         String functionName = "driveUntilLineDetected";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         double lightThreshold = 0.2;
@@ -1324,7 +1324,7 @@ public class HardwareMentor
         String functionName = "driveFollowLineUntilDistance";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         double lightThreshold = 0.2;
@@ -1344,7 +1344,7 @@ public class HardwareMentor
         String functionName = "pushBeaconUntilMatchesAlliance";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // TODO: Implement this
@@ -1378,7 +1378,7 @@ public class HardwareMentor
         String functionName = "turnByDegreesGyro";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         double gain = 0.7; // Tune this value as needed +/- for accurate turns
@@ -1427,7 +1427,7 @@ public class HardwareMentor
         String functionName = "turnByDegreesIMU";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         double gain = 0.7; // Tune this value as needed +/- for accurate turns
@@ -1483,7 +1483,7 @@ public class HardwareMentor
         String functionName = "turnByDegrees";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // If there is a Modern Robotics Gyro, use that first.
@@ -1509,7 +1509,7 @@ public class HardwareMentor
         String functionName = "turnByDegrees";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         turnByDegrees(degrees, DEFAULT_TURN_SPEED);
@@ -1537,7 +1537,7 @@ public class HardwareMentor
         String functionName = "fireAndArmChooChooLauncher";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         int newTarget;
@@ -1585,7 +1585,7 @@ public class HardwareMentor
         String functionName = "initializeMotors";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // Initialize the motor metadata map
@@ -1714,7 +1714,7 @@ public class HardwareMentor
         String functionName = "initializeServos";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // Add servo initialization here
@@ -1729,7 +1729,7 @@ public class HardwareMentor
         String functionName = "initializeSensors";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (hwMap == null) {
@@ -1884,7 +1884,7 @@ public class HardwareMentor
         String functionName = "getRobotConfigurationDataFromFile";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // TODO: Implement this
@@ -1907,7 +1907,7 @@ public class HardwareMentor
         String functionName = "init";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         setLoggingMode(LoggingMode.NONE);
@@ -1950,7 +1950,7 @@ public class HardwareMentor
         String functionName = "init";
 
         if (DEBUG_MODE) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         setLinearOpMode(om);

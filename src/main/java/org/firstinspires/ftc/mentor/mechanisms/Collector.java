@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.mentor.mechanisms;
 
-import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -80,7 +80,7 @@ public class Collector {
         String functionName = "getCollectorState";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
         return this.currentState;
     }
@@ -89,7 +89,7 @@ public class Collector {
         String functionName = "detectCollectorState";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (motor1 == null) {
@@ -115,7 +115,7 @@ public class Collector {
         String functionName = "getCollectorGearReduction";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return COLLECTOR_GEAR_REDUCTION;
@@ -125,7 +125,7 @@ public class Collector {
         String functionName = "setCollectorGearReduction";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         COLLECTOR_GEAR_REDUCTION = gearReduction;
@@ -135,7 +135,7 @@ public class Collector {
         String functionName = "getCollectorSpeed";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return DEFAULT_COLLECTOR_SPEED;
@@ -145,7 +145,7 @@ public class Collector {
         String functionName = "setCollectorSpeed";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         DEFAULT_COLLECTOR_SPEED = collectorSpeed;
@@ -155,7 +155,7 @@ public class Collector {
         String functionName = "getCollectorWheelDiameter";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         return COLLECTOR_WHEEL_DIAMETER;
@@ -165,7 +165,7 @@ public class Collector {
         String functionName = "setCollectorWheelDiameter";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         COLLECTOR_WHEEL_DIAMETER = collectorWheelDiameter;
@@ -176,7 +176,7 @@ public class Collector {
         String functionName = "runCollector";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (motor1 != null) {
@@ -191,7 +191,7 @@ public class Collector {
         String functionName = "startCollector";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         runCollector(speed);
@@ -202,7 +202,7 @@ public class Collector {
         String functionName = "startCollector";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         runCollector(DEFAULT_COLLECTOR_SPEED);
@@ -213,7 +213,7 @@ public class Collector {
         String functionName = "reverseCollector";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         // speed should be negative, so fix it if it is passed in as a positive value
@@ -227,7 +227,7 @@ public class Collector {
         String functionName = "reverseCollector";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         runCollector(DEFAULT_COLLECTOR_SPEED * -1);
@@ -238,7 +238,7 @@ public class Collector {
         String functionName = "stopCollector";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         runCollector(0);
@@ -255,7 +255,7 @@ public class Collector {
         String msg = "A LinearOpMode is required";
 
         if (DEBUG) {
-            DbgLog.msg(msg);
+            RobotLog.d(msg);
         }
         try {
             throw new Exception(msg);
@@ -268,7 +268,7 @@ public class Collector {
         String functionName = "unsupported";
 
         if (DEBUG) {
-            DbgLog.msg("%s not supported", functionName);
+            RobotLog.d("%s not supported", functionName);
         }
         try {
             throw new Exception(msg);

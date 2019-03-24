@@ -3,7 +3,7 @@ package org.firstinspires.ftc.mentor.common;
 import android.content.Context;
 import android.os.Environment;
 
-import com.qualcomm.ftccommon.DbgLog;
+import com.qualcomm.robotcore.util.RobotLog;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import java.io.File;
@@ -42,7 +42,7 @@ public class DataLogger {
         String functionName = "getInstance";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (instance == null) {
@@ -56,7 +56,7 @@ public class DataLogger {
         String functionName = "initialize";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         File path = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS);
@@ -80,7 +80,7 @@ public class DataLogger {
         String functionName = "logData";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (initialized) {
@@ -99,7 +99,7 @@ public class DataLogger {
         String functionName = "close";
 
         if (DEBUG) {
-            DbgLog.msg("%s", functionName);
+            RobotLog.d("%s", functionName);
         }
 
         if (initialized) {
