@@ -32,9 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.mentor;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.mentor.common.ControllerMode;
 
 /**
@@ -50,20 +50,18 @@ import org.firstinspires.ftc.mentor.common.ControllerMode;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp9455", group="Linear Opmode")  // @Autonomous(...) is the other common choice
-@Disabled
-public class TeleOp9455 extends LinearOpMode {
+@TeleOp(name="MecanumTeleOp", group="Linear Opmode")
+public class MecanumTeleOp extends LinearOpMode {
 
     /* Declare OpMode members. */
 
-    private Hardware9455 robot = new Hardware9455();   // Use mentor hardware definition
+    private HardwareMecanum robot = new HardwareMecanum();
 
     @Override
     public void runOpMode() {
         double left;
         double right;
         double rotation;
-        double max;
         double lastControllerSwitch = 0.0;
 
         // Initialize the robot hardware.
@@ -73,49 +71,15 @@ public class TeleOp9455 extends LinearOpMode {
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
-//        waitForStart();
+        waitForStart();
 
         while (! isStarted()) {
             telemetry.addData(">>> ", "Press Start");
             telemetry.update();
         }
 
-        robot.runtime.reset();
+        //robot.runtime.reset();
 
-        // Zero out the gyro after starting the robot.
-        // This corrects any gyro drift that may occur if the robot is idle for a long period of
-        // time after you have pressed the Init button.  E.g. Announcer talks a long time,
-        // FTA fixing a robot, Field maintenance, etc.
-        robot.zeroGyro();
-
-        /////
-        //
-        // Driver Control Mapping
-        //
-        // Controller 1 (Main)
-        //
-        // Left Stick = Left motor forward / back
-        // Right Stick = Right motor forward / back
-        //
-        // Left Bumper = rotate left and follow line to beacon, push beacon if not alliance color
-        // Right Bumper = rotate right and follow line to beacon, push beacon if not alliance color
-        // Left + Right Bumper = Drive straight forward until line detected
-        //
-        // Left Pad = rotate 90 degrees to left
-        // Right Pad = rotate 90 degrees to right
-        // Up Pad = move forward one second
-        // Down Pad = move forward one second
-        //
-        // A = Arm shooter
-        // B = Fire shooter
-        // X = Start ball gatherer
-        // Y = Stop ball gatherer
-        //
-        // Stick buttons...
-        // L3 =
-        // R3 =
-
-        // Controller 2
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -124,61 +88,17 @@ public class TeleOp9455 extends LinearOpMode {
             left = -gamepad1.left_stick_x;
             right = -gamepad1.left_stick_y;
             rotation = -gamepad1.right_stick_x;
-//            if (robot.CONTROLLER_MODE == Hardware9455.ControllerMode.TANK) {
-//                left = -gamepad1.left_stick_y;
-//                right = -gamepad1.right_stick_y;
-//            }
-//            else {
-//                left = -gamepad1.left_stick_y + -gamepad1.left_stick_x;
-//                right = -gamepad1.left_stick_y - -gamepad1.left_stick_x;
-//            }
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
             if (robot.isSlowDrive()) {
-//                robot.drive(left/robot.getSlowDriveDivisor(), right/robot.getSlowDriveDivisor());
                 robot.driveMecanumCartesian(left/robot.getSlowDriveDivisor(), right/robot.getSlowDriveDivisor(), rotation/robot.getSlowDriveDivisor());
             }
             else {
-//                robot.drive(left,right);
                 robot.driveMecanumCartesian(left, right, rotation);
             }
 
-            if (gamepad1.a) {
-                // TODO: A
-                //robot.ChooChooMotor.setPower(robot.CHOO_CHOO_MOTOR_SPEED);
-                robot.fireAndArmChooChooLauncher();
-            }
 
-            if (gamepad1.b) {
-                // TODO: B
-                // failsafe just in case
-                robot.stopChooChooMotor();
-            }
-
-            if (gamepad1.x) {
-                // Turn on the beater motor
-                if (!robot.isBeaterRunning) {
-                    robot.startBeaterMotor();
-                }
-                else {
-                    robot.reverseBeaterMotor();
-                }
-            }
-
-            if (gamepad1.y) {
-                // Turn off the beater motor
-                robot.stopBeaterMotor();
-            }
-
-//            if (gamepad1.left_bumper) {
-//                // TODO: left bumper
-//            }
-//            if (gamepad1.right_bumper) {
-//                // TODO: right bumper
-//            }
-//
-            if (gamepad1.left_stick_button) {
-                // TODO: L3
+            if (gamepad1.left_bumper) {
                 if (! robot.isSlowDrive()) {
                     robot.setSlowDrive(true);
                 }
@@ -186,11 +106,7 @@ public class TeleOp9455 extends LinearOpMode {
                     robot.setSlowDrive(false);
                 }
             }
-//
-//            if (gamepad1.right_stick_button) {
-//                // TODO: R3
-//            }
-//
+
             if (gamepad1.dpad_left) {
 
                 // Wait 2 seconds before allowing another controller switch
@@ -203,35 +119,7 @@ public class TeleOp9455 extends LinearOpMode {
                     lastControllerSwitch = robot.runtime.seconds();
                 }
             }
-//
-//            if (gamepad1.dpad_right) {
-//                // TODO: DR
-//            }
-//
-//            if (gamepad1.dpad_up) {
-//                // TODO: DU
-//            }
-//
-//            if (gamepad1.dpad_down) {
-//                // TODO: DD
-//            }
-//
-//            if (gamepad1.guide) {
-//                // TODO: back
-//            }
-//
-//            if (gamepad1.back) {
-//                // TODO: back
-//            }
-//
-//            if (gamepad1.start) {
-//                // TODO: start
-//            }
 
-
-
-//            telemetry.addData("left",  "%.2f", left);
-//            telemetry.addData("right", "%.2f", right);
             telemetry.update();
 
 
